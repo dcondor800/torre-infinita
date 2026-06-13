@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>TORRE ∞ INFINITA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@700;900&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0b0d1a; --panel:#141830; --panel2:#1d2342;
+    --neon:#ffd23f; --neon2:#ff5d8f; --cyan:#3fe0ff; --lime:#7dff6a; --viol:#b07dff;
+    --txt:#eef0ff; --dim:#8a90b8;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;}
+  html,body{height:100%;overflow:hidden;background:var(--ink);font-family:'Nunito','Segoe UI',system-ui,sans-serif;color:var(--txt);}
+  #wrap{position:relative;width:100%;height:100%;max-width:520px;margin:0 auto;overflow:hidden;}
+  canvas{display:block;width:100%;height:100%;touch-action:none;}
+
+  .screen{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+    background:rgba(8,10,24,.85);backdrop-filter:blur(6px);z-index:10;padding:22px 20px;text-align:center;overflow-y:auto;}
+  .screen.center{justify-content:center;}
+  .hidden{display:none!important;}
+
+  .logo{font-family:'Exo 2',system-ui,sans-serif;font-size:46px;font-weight:900;letter-spacing:3px;line-height:1.05;margin-top:18px;
+    background:linear-gradient(180deg,#fff9d0 0%,var(--neon) 45%,var(--neon2) 100%);-webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 0 18px rgba(255,93,143,.45));animation:logoShimmer 3s ease-in-out infinite;}
+  .logo small{display:block;font-size:13px;letter-spacing:10px;color:var(--cyan);-webkit-text-fill-color:var(--cyan);margin-top:3px;opacity:.85;}
+
+  .btn{border:none;border-radius:16px;padding:15px 30px;font-size:19px;font-weight:800;cursor:pointer;
+    margin:7px 0;min-width:240px;color:#1a1300;letter-spacing:.5px;
+    background:linear-gradient(180deg,var(--neon),#ffb83f);box-shadow:0 6px 0 #b07b00,0 10px 24px rgba(0,0,0,.45);
+    transition:transform .12s cubic-bezier(.34,1.56,.64,1),box-shadow .12s ease;}
+  .btn:active{transform:translateY(4px);box-shadow:0 2px 0 #b07b00;}
+  .btn.sec{background:linear-gradient(180deg,#2a3160,#1d2342);color:var(--txt);box-shadow:0 6px 0 #11142b,0 10px 24px rgba(0,0,0,.45);font-size:16px;}
+  .btn.sec:active{box-shadow:0 2px 0 #11142b;}
+  .btn.buy{background:linear-gradient(180deg,var(--lime),#3fc94f);color:#06300d;box-shadow:0 6px 0 #1d7a2a;}
+  .btn.buy:active{box-shadow:0 2px 0 #1d7a2a;}
+  .btn.gem{background:linear-gradient(180deg,var(--cyan),#3f8dff);color:#04223a;box-shadow:0 6px 0 #1b4fa0;}
+  .btn.gem:active{box-shadow:0 2px 0 #1b4fa0;}
+  .btn.sm{min-width:auto;padding:10px 16px;font-size:15px;margin:0;}
+  .btn:disabled{opacity:.45;filter:grayscale(.6);}
+
+  #hud{position:absolute;top:0;left:0;right:0;z-index:5;display:flex;justify-content:space-between;
+    padding:14px 16px;pointer-events:none;font-weight:800;}
+  .pill{background:rgba(10,12,30,.65);border:1px solid rgba(255,255,255,.12);border-radius:999px;
+    padding:6px 14px;font-size:15px;display:flex;gap:6px;align-items:center;backdrop-filter:blur(4px);}
+  #hudHeight{font-size:22px;color:var(--neon);}
+  #combo{position:absolute;top:60px;left:0;right:0;text-align:center;z-index:5;pointer-events:none;
+    font-size:26px;font-weight:900;color:var(--neon2);text-shadow:0 0 14px rgba(255,93,143,.8);
+    opacity:0;transition:opacity .2s;}
+  #puHud{position:absolute;top:96px;left:14px;z-index:5;display:flex;flex-direction:column;gap:6px;pointer-events:none;}
+  .pu{display:flex;align-items:center;gap:6px;background:rgba(10,12,30,.6);border-radius:10px;padding:4px 8px;font-size:13px;font-weight:800;}
+  .pu .bar{width:46px;height:5px;border-radius:9px;background:#2a3160;overflow:hidden;}
+  .pu .bar i{display:block;height:100%;background:currentColor;}
+  #banner{position:absolute;top:34%;left:0;right:0;text-align:center;z-index:6;pointer-events:none;
+    font-size:30px;font-weight:900;color:var(--neon);text-shadow:0 0 20px rgba(255,210,63,.9);opacity:0;transition:opacity .25s;}
+
+  .card{background:var(--panel);border:1px solid rgba(255,255,255,.1);border-radius:20px;
+    padding:18px;width:100%;max-width:390px;box-shadow:0 20px 60px rgba(0,0,0,.5);margin-bottom:12px;}
+  .stat{display:flex;justify-content:space-between;padding:8px 4px;font-size:16px;border-bottom:1px dashed rgba(255,255,255,.08);}
+  .stat:last-child{border:none;}
+  .stat b{color:var(--neon);}
+  h2{margin:6px 0 10px;font-size:24px;}
+  .sub{color:var(--dim);font-size:13px;margin-bottom:12px;}
+  .ttl{font-size:13px;letter-spacing:2px;color:var(--cyan);font-weight:800;text-transform:uppercase;margin:2px 0 8px;}
+
+  .shopgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:390px;margin-bottom:10px;}
+  .skin{background:var(--panel2);border:2px solid transparent;border-radius:16px;padding:12px 8px;cursor:pointer;text-align:center;}
+  .skin.owned{border-color:rgba(255,255,255,.18);}
+  .skin.equipped{border-color:var(--neon);box-shadow:0 0 16px rgba(255,210,63,.35);}
+  .skin .dot{width:36px;height:36px;border-radius:50%;margin:0 auto 7px;box-shadow:0 0 14px currentColor;}
+  .skin .nm{font-weight:800;font-size:13px;}
+  .skin .pr{font-size:12px;color:var(--dim);margin-top:3px;}
+
+  .row{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--panel2);
+    border-radius:14px;padding:11px 13px;margin-bottom:8px;width:100%;max-width:390px;text-align:left;}
+  .row .ic{font-size:24px;width:30px;text-align:center;}
+  .row .info{flex:1;}
+  .row .info b{font-size:15px;}
+  .row .info span{display:block;font-size:12px;color:var(--dim);margin-top:1px;}
+  .lvldots{display:flex;gap:3px;margin-top:4px;}
+  .lvldots i{width:14px;height:5px;border-radius:9px;background:#39406e;}
+  .lvldots i.on{background:var(--lime);}
+
+  .mrow{display:flex;align-items:center;gap:10px;background:var(--panel2);border-radius:14px;padding:10px 12px;margin-bottom:7px;width:100%;max-width:390px;text-align:left;}
+  .mrow .info{flex:1;}
+  .mrow .info b{font-size:14px;}
+  .mrow .pbar{height:7px;border-radius:9px;background:#2a3160;overflow:hidden;margin-top:5px;}
+  .mrow .pbar i{display:block;height:100%;background:linear-gradient(90deg,var(--cyan),var(--lime));}
+  .mrow .rw{font-size:12px;color:var(--neon);font-weight:800;white-space:nowrap;}
+  .mrow.done{opacity:.55;}
+  .mrow .chk{color:var(--lime);font-size:20px;font-weight:900;}
+
+  .gempack{display:flex;align-items:center;justify-content:space-between;background:var(--panel2);
+    border-radius:14px;padding:12px 14px;margin-bottom:8px;width:100%;max-width:390px;}
+  .gempack .left{text-align:left;}
+  .gempack .left b{font-size:16px;color:var(--cyan);}
+  .gempack .left span{display:block;font-size:12px;color:var(--dim);}
+  .tag{position:absolute;transform:translateY(-26px);background:var(--neon2);color:#fff;font-size:11px;font-weight:800;padding:3px 10px;border-radius:999px;letter-spacing:1px;}
+
+  .demoNote{margin:8px 0 16px;font-size:12px;color:var(--dim);max-width:360px;line-height:1.5;}
+  #tapHint{position:absolute;bottom:14%;left:0;right:0;text-align:center;z-index:4;pointer-events:none;color:var(--txt);font-weight:700;font-size:17px;opacity:.9;animation:pul 1.4s infinite;}
+  @keyframes pul{0%,100%{opacity:.35}50%{opacity:.95}}
+  #adOverlay .bar{width:240px;height:10px;background:#222950;border-radius:99px;overflow:hidden;margin:16px auto;}
+  #adOverlay .fill{height:100%;width:0%;background:linear-gradient(90deg,var(--cyan),var(--lime));}
+  .topnav{position:sticky;top:0;align-self:flex-start;z-index:12;margin-bottom:4px;}
+  .x{background:rgba(255,255,255,.1);border:none;color:var(--txt);font-size:18px;font-weight:900;width:42px;height:42px;border-radius:50%;cursor:pointer;}
+  .tabs{display:flex;gap:8px;margin-bottom:12px;}
+  .tab{background:var(--panel2);border:none;color:var(--dim);font-weight:800;font-size:14px;padding:8px 16px;border-radius:999px;cursor:pointer;}
+  .tab.on{background:var(--neon);color:#1a1300;}
+
+  #toasts{position:absolute;bottom:18px;left:0;right:0;z-index:20;display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:none;}
+  .toast{background:rgba(20,24,48,.95);border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:9px 16px;font-weight:800;font-size:14px;box-shadow:0 8px 24px rgba(0,0,0,.5);animation:tin .3s;}
+  @keyframes tin{from{transform:translateY(14px);opacity:0}to{transform:translateY(0);opacity:1}}
+  .badge{position:absolute;top:-4px;right:-4px;background:var(--neon2);color:#fff;font-size:11px;font-weight:900;min-width:18px;height:18px;border-radius:9px;display:flex;align-items:center;justify-content:center;padding:0 4px;}
+
+  .passHead{width:100%;max-width:390px;background:var(--panel);border-radius:16px;padding:14px;margin-bottom:10px;}
+  .passHead .xpbar{height:10px;border-radius:9px;background:#2a3160;overflow:hidden;margin-top:8px;}
+  .passHead .xpbar i{display:block;height:100%;background:linear-gradient(90deg,var(--cyan),var(--viol));}
+  .plevel{display:flex;align-items:stretch;gap:8px;width:100%;max-width:390px;margin-bottom:7px;}
+  .plevel .lv{width:42px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--panel2);border-radius:12px;font-weight:900;font-size:15px;}
+  .plevel .lv small{font-size:9px;color:var(--dim);font-weight:700;}
+  .plevel.reached .lv{background:linear-gradient(180deg,var(--cyan),var(--viol));color:#04223a;}
+  .preward{flex:1;display:flex;align-items:center;justify-content:space-between;gap:6px;border-radius:12px;padding:8px 11px;font-size:13px;font-weight:700;background:var(--panel2);border:1px solid transparent;}
+  .preward .tk{font-size:9px;letter-spacing:1px;color:var(--dim);text-transform:uppercase;}
+  .preward.prem{background:linear-gradient(180deg,#241d3e,#1d2342);}
+  .preward.canclaim{border-color:var(--lime);cursor:pointer;box-shadow:0 0 12px rgba(125,255,106,.3);}
+  .preward.claimed{opacity:.4;}
+  .preward.locked{opacity:.5;}
+  .preward .cap{display:flex;align-items:center;gap:4px;}
+  .pcols{display:flex;gap:6px;width:100%;max-width:390px;margin-bottom:4px;}
+  .pcols div{flex:1;text-align:center;font-size:11px;font-weight:800;letter-spacing:1px;color:var(--dim);}
+  .pcols div:first-child{width:42px;flex:none;}
+
+  /* ===== HOME / MENÚ tipo juego casual ===== */
+  .menu{justify-content:space-between;padding:14px 16px 16px;background:transparent;backdrop-filter:none;}
+  #bgArt{position:absolute;inset:0;z-index:0;overflow:hidden;}
+  #bgArt svg{width:100%;height:100%;display:block;}
+  .menu .hometop, .menu .homemid, .menu .bnav{position:relative;z-index:1;}
+  .hometop{display:flex;align-items:center;justify-content:space-between;width:100%;max-width:430px;gap:8px;}
+  .curbox{display:flex;align-items:center;gap:8px;}
+  .pill.best{font-size:15px;font-weight:800;color:var(--neon);}
+  .pill.cur{border:1px solid rgba(255,255,255,.12);background:rgba(10,12,30,.6);color:var(--txt);font-weight:800;font-size:15px;cursor:default;}
+  button.pill.cur{cursor:pointer;}
+  .pill.cur b{color:var(--lime);font-size:17px;line-height:1;}
+  .iconbtn{width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,255,255,.12);background:rgba(10,12,30,.6);color:var(--txt);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none;transition:transform .2s cubic-bezier(.34,1.56,.64,1),border-color .2s,background .2s;}
+  .iconbtn:active{transform:rotate(45deg) scale(.9);}
+
+  .homemid{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;width:100%;max-width:430px;gap:22px;}
+  .menu .logo{margin:0;font-size:50px;letter-spacing:4px;}
+  .bestchip{font-size:14px;font-weight:700;color:var(--dim);background:rgba(10,12,30,.5);border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:7px 20px;margin-top:-12px;transition:border-color .2s;}
+  .bestchip b{color:var(--neon);}
+
+  .chestChip{position:relative;display:inline-flex;align-items:center;gap:8px;align-self:center;
+    background:rgba(10,12,30,.6);border:1px solid rgba(255,255,255,.14);border-radius:999px;
+    padding:10px 22px;color:var(--txt);font-weight:800;font-size:14px;cursor:pointer;
+    transition:transform .15s cubic-bezier(.34,1.56,.64,1),border-color .2s,box-shadow .2s;}
+  .chestChip:active{transform:scale(.94);}
+  .chestChip .ci{font-size:20px;display:inline-block;transition:transform .25s cubic-bezier(.34,1.56,.64,1);}
+  .chestChip.ready{border-color:var(--neon2);color:#fff;background:linear-gradient(180deg,rgba(255,93,143,.28),rgba(176,125,255,.22));animation:cglow 1.6s ease-in-out infinite;}
+  @keyframes cglow{0%,100%{box-shadow:0 0 0 rgba(255,93,143,0)}50%{box-shadow:0 0 18px rgba(255,93,143,.55)}}
+
+  .playBig{width:100%;max-width:280px;border:none;border-radius:28px;padding:22px 26px;cursor:pointer;
+    font-family:'Exo 2',system-ui,sans-serif;font-size:32px;font-weight:900;letter-spacing:3px;color:#1a1300;display:flex;align-items:center;justify-content:center;gap:10px;
+    background:linear-gradient(180deg,#fff59a 0%,#ffe14d 30%,#ffb83f 100%);
+    box-shadow:0 8px 0 #b07b00,0 16px 34px rgba(255,180,60,.45),inset 0 1px 0 rgba(255,255,255,.35);
+    transition:transform .14s cubic-bezier(.34,1.56,.64,1),box-shadow .14s ease;
+    animation:playBreath 2.5s ease-in-out infinite;}
+  .playBig:active{transform:translateY(6px) scale(.98);box-shadow:0 2px 0 #b07b00,0 6px 14px rgba(255,180,60,.3);animation:none;}
+
+  .bnav{display:flex;align-items:stretch;justify-content:space-between;gap:2px;width:100%;max-width:430px;
+    background:rgba(10,12,30,.55);border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:7px 5px;}
+  .bnav button{position:relative;flex:1;background:none;border:none;color:var(--dim);font-size:11px;font-weight:800;
+    cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 2px;border-radius:12px;
+    transition:color .18s,background .18s,transform .15s cubic-bezier(.34,1.56,.64,1);}
+  .bnav button span:first-child{font-size:22px;line-height:1;display:block;transition:transform .15s cubic-bezier(.34,1.56,.64,1);}
+  .bnav button:active{background:rgba(255,255,255,.07);color:var(--txt);transform:scale(.9);}
+  .bnav .badge{top:2px;right:50%;transform:translateX(18px);}
+
+  /* ===== HOVER & MICRO-INTERACCIONES MENÚ ===== */
+  @keyframes logoShimmer{
+    0%,100%{filter:drop-shadow(0 0 18px rgba(255,210,63,.4))}
+    50%{filter:drop-shadow(0 0 36px rgba(255,93,143,.7))}
+  }
+  @keyframes playBreath{
+    0%,100%{box-shadow:0 8px 0 #b07b00,0 16px 34px rgba(255,180,60,.45),inset 0 1px 0 rgba(255,255,255,.35)}
+    50%{box-shadow:0 8px 0 #b07b00,0 24px 56px rgba(255,210,63,.72),0 0 0 8px rgba(255,210,63,.11),inset 0 1px 0 rgba(255,255,255,.35)}
+  }
+  /* Botón JUGAR hover */
+  .playBig:hover{transform:translateY(-4px) scale(1.04);box-shadow:0 13px 0 #b07b00,0 28px 54px rgba(255,180,60,.7),inset 0 1px 0 rgba(255,255,255,.35);}
+  /* Botones genéricos hover */
+  .btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 0 #b07b00,0 16px 34px rgba(255,180,60,.55);}
+  .btn.sec:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 0 #11142b,0 14px 32px rgba(0,0,0,.55);}
+  .btn.gem:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 0 #1b4fa0,0 14px 32px rgba(63,141,255,.38);}
+  .btn.buy:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 0 #1d7a2a,0 14px 32px rgba(125,255,106,.28);}
+  /* ⚙️ Settings */
+  .iconbtn:hover{transform:rotate(25deg) scale(1.12);border-color:rgba(255,255,255,.32);background:rgba(28,34,72,.9);}
+  /* 💎 Pills de monedas/gemas */
+  button.pill.cur{transition:transform .15s cubic-bezier(.34,1.56,.64,1),border-color .2s,box-shadow .2s;}
+  button.pill.cur:hover{border-color:rgba(125,255,106,.55);box-shadow:0 0 16px rgba(125,255,106,.28);transform:translateY(-2px);}
+  button.pill.cur:active{transform:translateY(1px);}
+  /* 🎁 Cofre */
+  .chestChip:hover{transform:translateY(-3px) scale(1.04);border-color:rgba(255,255,255,.3);box-shadow:0 10px 24px rgba(0,0,0,.4);}
+  .chestChip.ready:hover{box-shadow:0 0 32px rgba(255,93,143,.68);}
+  .chestChip:hover .ci{transform:rotate(-14deg) scale(1.22);}
+  /* Barra inferior */
+  .bnav button:hover{color:var(--txt);background:rgba(255,255,255,.09);transform:translateY(-3px);}
+  .bnav button:hover span:first-child{transform:scale(1.2) translateY(-2px);}
+</style>
+</head>
+<body>
+<div id="wrap">
+  <canvas id="cv"></canvas>
+
+  <!-- HUD -->
+  <div id="hud" class="hidden">
+    <div class="pill" id="hudHeight">0 m</div>
+    <div id="hudLives" style="position:absolute;top:16px;left:50%;transform:translateX(-50%);font-size:21px;letter-spacing:3px;pointer-events:none;filter:drop-shadow(0 0 7px rgba(255,60,80,.85));"></div>
+    <div style="display:flex;gap:8px;">
+      <div class="pill">🪙 <span id="hudCoins">0</span></div>
+      <div class="pill">💎 <span id="hudGems">0</span></div>
+    </div>
+  </div>
+  <div id="puHud"></div>
+  <div id="combo"></div>
+  <div id="banner"></div>
+  <div id="tapHint" class="hidden">TOCA seguido para saltar entre paredes ⚡</div>
+  <div id="toasts"></div>
+
+  <!-- MENÚ -->
+  <div id="menu" class="screen menu">
+    <div id="bgArt" aria-hidden="true">
+      <svg viewBox="0 0 400 720" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#2a2160"/><stop offset="0.5" stop-color="#3a2a68"/><stop offset="1" stop-color="#0b0d1a"/>
+          </linearGradient>
+          <linearGradient id="wall" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#10142e"/><stop offset="1" stop-color="#0a0c1f"/>
+          </linearGradient>
+          <radialGradient id="hero" cx="0.5" cy="0.4" r="0.6">
+            <stop offset="0" stop-color="#ffe98a"/><stop offset="0.6" stop-color="#ffd23f"/><stop offset="1" stop-color="#ff9d3f"/>
+          </radialGradient>
+        </defs>
+        <rect width="400" height="720" fill="url(#sky)"/>
+        <!-- estrellas -->
+        <g fill="#ffffff">
+          <circle cx="60" cy="90" r="1.6" opacity=".7"/><circle cx="150" cy="50" r="1.2" opacity=".5"/>
+          <circle cx="250" cy="120" r="1.8" opacity=".8"/><circle cx="330" cy="70" r="1.3" opacity=".6"/>
+          <circle cx="200" cy="200" r="1.4" opacity=".5"/><circle cx="100" cy="260" r="1.6" opacity=".7"/>
+          <circle cx="300" cy="300" r="1.2" opacity=".5"/><circle cx="350" cy="420" r="1.7" opacity=".7"/>
+          <circle cx="70" cy="470" r="1.3" opacity=".5"/><circle cx="240" cy="520" r="1.5" opacity=".6"/>
+          <circle cx="160" cy="610" r="1.4" opacity=".5"/><circle cx="320" cy="640" r="1.6" opacity=".6"/>
+        </g>
+        <!-- ∞ tenue de marca -->
+        <text x="200" y="160" font-family="system-ui" font-size="120" font-weight="900" fill="#ffffff" opacity="0.05" text-anchor="middle">∞</text>
+        <!-- paredes -->
+        <rect x="0" y="0" width="46" height="720" fill="url(#wall)"/>
+        <rect x="354" y="0" width="46" height="720" fill="url(#wall)"/>
+        <rect x="44" y="0" width="2" height="720" fill="#3fe0ff" opacity="0.55"/>
+        <rect x="354" y="0" width="2" height="720" fill="#3fe0ff" opacity="0.55"/>
+        <g stroke="#ffffff" stroke-opacity="0.06" fill="none">
+          <path d="M0 80H46M0 160H46M0 240H46M0 320H46M0 400H46M0 480H46M0 560H46M0 640H46"/>
+          <path d="M354 120H400M354 200H400M354 280H400M354 360H400M354 440H400M354 520H400M354 600H400M354 680H400"/>
+        </g>
+        <!-- pinchos -->
+        <g fill="#ff5d8f">
+          <path d="M46 300L46 330L62 315Z"/><path d="M46 340L46 370L62 355Z"/>
+          <path d="M354 460L354 490L338 475Z"/><path d="M354 500L354 530L338 515Z"/>
+        </g>
+        <!-- monedas -->
+        <g>
+          <circle cx="150" cy="250" r="9" fill="#ffd23f"/><circle cx="150" cy="250" r="5" fill="#b07b00"/>
+          <circle cx="250" cy="430" r="9" fill="#ffd23f"/><circle cx="250" cy="430" r="5" fill="#b07b00"/>
+          <circle cx="120" cy="560" r="9" fill="#ffd23f"/><circle cx="120" cy="560" r="5" fill="#b07b00"/>
+        </g>
+        <!-- héroe saltando con estela -->
+        <g>
+          <circle cx="120" cy="430" r="9" fill="#ff9d3f" opacity="0.18"/>
+          <circle cx="140" cy="410" r="11" fill="#ff9d3f" opacity="0.3"/>
+          <circle cx="170" cy="388" r="18" fill="url(#hero)"/>
+          <circle cx="170" cy="388" r="24" fill="#ffd23f" opacity="0.18"/>
+          <circle cx="176" cy="384" r="3.4" fill="#0b0d1a"/><circle cx="166" cy="384" r="3.4" fill="#0b0d1a"/>
+        </g>
+        <!-- chevrones de ascenso -->
+        <g stroke="#3fe0ff" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.18">
+          <path d="M180 250l20 -20l20 20"/><path d="M180 290l20 -20l20 20"/>
+        </g>
+        <!-- velo para legibilidad -->
+        <rect width="400" height="720" fill="#080a18" opacity="0.5"/>
+      </svg>
+    </div>
+    <div class="hometop">
+      <button class="iconbtn" id="btnSettings">⚙️</button>
+      <div class="curbox">
+        <div class="pill cur">🪙 <span id="mCoins">0</span></div>
+        <button class="pill cur" id="btnGems">💎 <span id="mGems">25</span> <b>+</b></button>
+      </div>
+    </div>
+
+    <div class="homemid">
+      <div class="logo">TORRE<small>∞ INFINITA ∞</small></div>
+      <div class="bestchip">🏆 Mejor: <b id="mBest">0 m</b></div>
+      <button class="playBig" id="btnPlay">▶ <span>JUGAR</span></button>
+      <button class="chestChip" id="btnChest">
+        <span class="ci">🎁</span><span id="chestState">Cofre diario</span>
+        <span class="badge" id="chestBadge" style="display:none">!</span>
+      </button>
+    </div>
+
+    <div class="bnav">
+      <button id="btnShop"><span>🛍</span>Tienda</button>
+      <button id="btnMissions"><span>🎯</span>Misiones</button>
+      <button id="btnUpgrades"><span>⚡</span>Mejoras</button>
+      <button id="btnLeader"><span>🏆</span>Ranking</button>
+      <button id="btnAch"><span>🏅</span>Logros</button>
+    </div>
+  </div>
+
+  <!-- GAME OVER -->
+  <div id="gameover" class="screen center hidden">
+    <h2 style="font-size:34px;color:var(--neon2);text-shadow:0 0 16px rgba(255,93,143,.6);">¡CAÍSTE!</h2>
+    <div class="card">
+      <div class="stat"><span>Altura</span><b id="goHeight">0 m</b></div>
+      <div class="stat"><span>Mejor combo</span><b id="goCombo">×1</b></div>
+      <div class="stat"><span>🪙 Ganadas</span><b id="goCoins">0</b></div>
+      <div class="stat"><span>🏆 Récord</span><b id="goBest">0 m</b></div>
+    </div>
+    <div class="card" style="background:linear-gradient(120deg,#1c3a5e,#3a2a68 60%,#5a2a6e);">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <b style="font-size:15px;">🎟 Pase · Nivel <span id="goPassLvl">0</span></b>
+        <span style="color:var(--cyan);font-weight:800;">+<span id="goPassXp">0</span> XP</span>
+      </div>
+      <div class="xpbar" style="height:9px;border-radius:9px;background:rgba(0,0,0,.38);overflow:hidden;margin-top:8px;"><i id="goPassBar" style="display:block;height:100%;width:0%;background:linear-gradient(90deg,var(--cyan),var(--viol));transition:width .8s ease;"></i></div>
+      <button class="btn sec sm" id="btnPass" style="width:100%;margin-top:11px;position:relative;">Ver pase de temporada<span class="badge" id="passBadge" style="display:none">!</span></button>
+    </div>
+    <div id="reviveBox">
+      <div style="position:relative;"><span class="tag">¡SIGUE TU RACHA!</span></div>
+      <button class="btn gem" id="btnReviveGems">💎 REVIVIR — 10 gemas</button>
+      <button class="btn sec" id="btnReviveAd">📺 Revivir viendo anuncio</button>
+    </div>
+    <button class="btn" id="btnRetry">↻ &nbsp;Reintentar</button>
+    <button class="btn sec" id="btnHome">🏠 Menú</button>
+  </div>
+
+  <!-- MISIONES -->
+  <div id="missions" class="screen hidden">
+    <div class="topnav"><button class="x" data-close="missions">✕</button></div>
+    <h2>🎯 Misiones diarias</h2>
+    <p class="sub">Se renuevan cada día. ¡Vuelve mañana por más!</p>
+    <div id="missionList" style="width:100%;max-width:390px;"></div>
+    <p class="demoNote">Las misiones diarias son uno de los mayores motores de retención en juegos casuales.</p>
+  </div>
+
+  <!-- MEJORAS -->
+  <div id="upgrades" class="screen hidden">
+    <div class="topnav"><button class="x" data-close="upgrades">✕</button></div>
+    <h2>⚡ Mejoras permanentes</h2>
+    <p class="sub">Gasta 🪙 monedas. Se mantienen para siempre. 🪙 <span id="uCoins">0</span></p>
+    <div id="upgList" style="width:100%;max-width:390px;"></div>
+  </div>
+
+  <!-- TIENDA SKINS -->
+  <div id="shop" class="screen hidden">
+    <div class="topnav"><button class="x" data-close="shop">✕</button></div>
+    <h2>🛍 Tienda de Skins</h2>
+    <p class="sub">🪙 <span id="sCoins">0</span> &nbsp;·&nbsp; 💎 <span id="sGems">0</span></p>
+    <div class="shopgrid" id="skinGrid"></div>
+  </div>
+
+  <!-- GEMAS / IAP -->
+  <div id="gemshop" class="screen hidden">
+    <div class="topnav"><button class="x" data-close="gemshop">✕</button></div>
+    <h2>💎 Packs de Gemas</h2>
+    <p class="sub">Compras dentro de la app (simuladas en este prototipo)</p>
+    <div class="gempack"><div class="left"><b>💎 80 gemas</b><span>Puñado brillante</span></div><button class="btn buy sm" data-gems="80" data-price="S/ 3.90">S/ 3.90</button></div>
+    <div class="gempack"><div class="left"><b>💎 500 gemas</b><span>Cofre del escalador · +25% extra</span></div><button class="btn buy sm" data-gems="500" data-price="S/ 18.90">S/ 18.90</button></div>
+    <div class="gempack" style="border:2px solid var(--neon);"><div class="left"><b>💎 1200 gemas</b><span>⭐ MÁS POPULAR · +50% extra</span></div><button class="btn buy sm" data-gems="1200" data-price="S/ 36.90">S/ 36.90</button></div>
+    <div class="gempack"><div class="left"><b>🚫 Quitar anuncios</b><span>Pago único, para siempre</span></div><button class="btn gem sm" id="btnNoAds">S/ 12.90</button></div>
+    <p class="demoNote">En producción: Google Play Billing / StoreKit con precios localizados y restauración de compras.</p>
+  </div>
+
+  <!-- COFRE DIARIO -->
+  <div id="chest" class="screen center hidden">
+    <div class="topnav" style="position:absolute;top:14px;left:14px;"><button class="x" data-close="chest">✕</button></div>
+    <h2>🎁 Cofre diario</h2>
+    <div id="chestView" class="card" style="text-align:center;">
+      <div style="font-size:70px;margin:6px 0;" id="chestIcon">🎁</div>
+      <div id="chestMsg" style="font-size:16px;margin-bottom:6px;">¡Tu recompensa de hoy te espera!</div>
+      <div id="chestStreak" class="sub" style="margin-bottom:14px;"></div>
+      <button class="btn" id="btnOpenChest">ABRIR</button>
+    </div>
+    <p class="demoNote">Vuelve cada día: la racha aumenta la recompensa. Es uno de los mejores ganchos de hábito.</p>
+  </div>
+
+  <!-- RANKING -->
+  <div id="leaderboard" class="screen hidden">
+    <div class="topnav"><button class="x" data-close="leaderboard">✕</button></div>
+    <h2>🏆 Ranking</h2>
+    <p class="sub">Tabla local. ¡Supera a los demás escaladores!</p>
+    <div id="leaderList" style="width:100%;max-width:390px;"></div>
+    <p class="demoNote">En producción esto sería un ranking online (Game Center / Google Play Games) para competir con jugadores reales.</p>
+  </div>
+
+  <!-- LOGROS -->
+  <div id="achievements" class="screen hidden">
+    <div class="topnav"><button class="x" data-close="achievements">✕</button></div>
+    <h2>🏅 Logros</h2>
+    <p class="sub">Desbloquea logros y gana recompensas. <span id="achCount"></span></p>
+    <div id="achList" style="width:100%;max-width:390px;"></div>
+  </div>
+
+  <!-- AJUSTES -->
+  <div id="settings" class="screen hidden">
+    <div class="topnav"><button class="x" data-close="settings">✕</button></div>
+    <h2>⚙️ Ajustes</h2>
+    <div class="card" style="max-width:390px;">
+      <div class="row" style="margin-bottom:8px;"><div class="ic">🎵</div><div class="info"><b>Música</b><span>Banda sonora dinámica</span></div><button class="btn sm" id="tMusic">ON</button></div>
+      <div class="row" style="margin-bottom:0;"><div class="ic">🔊</div><div class="info"><b>Efectos de sonido</b><span>Saltos, monedas, etc.</span></div><button class="btn sm" id="tSfx">ON</button></div>
+    </div>
+    <button class="btn sec" id="btnReset" style="background:linear-gradient(180deg,#5a2030,#3a1420);">🗑 Borrar progreso</button>
+    <p class="demoNote">El progreso se guarda en este dispositivo.</p>
+  </div>
+
+  <!-- PASE DE TEMPORADA -->
+  <div id="pass" class="screen hidden">
+    <div class="topnav"><button class="x" data-close="pass">✕</button></div>
+    <h2>🎟 Pase de temporada</h2>
+    <div class="passHead">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div><b id="passSeason">Temporada 1</b><div class="sub" style="margin:0;" id="passDays">30 días restantes</div></div>
+        <div style="text-align:right"><b style="font-size:20px;color:var(--cyan)" id="passLvl">Nv 0</b><div class="sub" style="margin:0;" id="passXp">0 / 250 XP</div></div>
+      </div>
+      <div class="xpbar"><i id="passXpBar" style="width:0%"></i></div>
+      <button class="btn gem sm" id="btnBuyPass" style="width:100%;margin-top:12px;">⭐ Comprar Pase Premium — S/ 19.90</button>
+      <button class="btn sec sm" id="btnClaimAll" style="width:100%;margin-top:8px;">🎁 Reclamar todo lo disponible</button>
+    </div>
+    <div class="pcols"><div>NIVEL</div><div>GRATIS</div><div>PREMIUM ⭐</div></div>
+    <div id="passList" style="width:100%;max-width:390px;"></div>
+    <p class="demoNote">La compra del pase es simulada. Es el modelo de monetización más rentable y mejor aceptado: das mucho valor por un pago único y no es "pay-to-win".</p>
+  </div>
+
+  <!-- ANUNCIO SIMULADO -->
+  <div id="adOverlay" class="screen center hidden">
+    <h2>📺 Anuncio simulado…</h2>
+    <div class="bar"><div class="fill" id="adFill"></div></div>
+    <p class="sub">En producción aquí se muestra un rewarded ad (AdMob / Unity Ads)</p>
+  </div>
+</div>
+
+<script>
+'use strict';
+/* ===================== PERSISTENCIA ===================== */
+const DEF = {
+  coins:0, gems:25, best:0, skin:0, owned:[0], noAds:false,
+  up:{coinMult:0, magnet:0, luck:0, startShield:0, blasterUpg:0},
+  missions:[], missionDate:'',
+  daily:{date:'', height:0, coins:0, combo:1, pu:0, runs:0},
+  chest:{last:'', streak:0},
+  stats:{runs:0, totalCoins:0, maxH:0, maxCombo:1, pu:0, revives:0, shieldSaves:0, rockets:0},
+  ach:{}, lb:[], music:true, sfx:true,
+  pass:{season:1, xp:0, premium:false, cf:[], cp:[], start:''},
+};
+let S = JSON.parse(JSON.stringify(DEF));
+let STORAGE_OK = (function(){ try{ localStorage.setItem('__t','1'); localStorage.removeItem('__t'); return true; }catch(e){ return false; } })();
+function save(){ try{ localStorage.setItem('torreInf', JSON.stringify(S)); }catch(e){} }
+function load(){
+  try{
+    const r = localStorage.getItem('torreInf');
+    if(r){ const o=JSON.parse(r);
+      S = Object.assign(JSON.parse(JSON.stringify(DEF)), o);
+      S.up = Object.assign({coinMult:0,magnet:0,luck:0,startShield:0,blasterUpg:0}, o.up||{});
+      S.daily = Object.assign({date:'',height:0,coins:0,combo:1,pu:0,runs:0}, o.daily||{});
+      S.chest = Object.assign({last:'',streak:0}, o.chest||{});
+      S.stats = Object.assign({runs:0,totalCoins:0,maxH:0,maxCombo:1,pu:0,revives:0,shieldSaves:0,rockets:0}, o.stats||{});
+      S.ach = o.ach||{}; S.lb = o.lb||[];
+      S.pass = Object.assign({season:1,xp:0,premium:false,cf:[],cp:[],start:''}, o.pass||{});
+      if(o.music===undefined) S.music=true; if(o.sfx===undefined) S.sfx=true;
+    }
+  }catch(e){}
+}
+
+const SKINS = [
+  {nm:'Clásico',  c:'#ffd23f', t:'#ff9d3f', price:0,    cur:'coins'},
+  {nm:'Neón Rosa',c:'#ff5d8f', t:'#ff8fb8', price:150,  cur:'coins'},
+  {nm:'Cian Hielo',c:'#3fe0ff',t:'#9ff0ff', price:300,  cur:'coins'},
+  {nm:'Tóxico',   c:'#7dff6a', t:'#c8ff5d', price:500,  cur:'coins'},
+  {nm:'Fantasma', c:'#cdd3ff', t:'#8a90ff', price:20,   cur:'gems'},
+  {nm:'Magma',    c:'#ff6a3d', t:'#ffd23f', price:40,   cur:'gems'},
+  {nm:'Aurora',   c:'#5dffd0', t:'#b07dff', price:0,    cur:'pass'},
+  {nm:'Vóltico',  c:'#ffe14d', t:'#3fe0ff', price:0,    cur:'pass'},
+  {nm:'Dorado',   c:'#ffcf33', t:'#fff6c8', price:0,    cur:'pass'},
+];
+
+const UPGRADES = [
+  {k:'coinMult',   ic:'🪙', nm:'Multiplicador de monedas', desc:'+15% monedas por nivel',          max:5, cost:l=>120*(l+1)},
+  {k:'magnet',     ic:'🧲', nm:'Imán mejorado',            desc:'Power-up de imán dura más',        max:5, cost:l=>150*(l+1)},
+  {k:'luck',       ic:'🍀', nm:'Suerte de power-ups',       desc:'Aparecen power-ups más seguido',   max:3, cost:l=>200*(l+1)},
+  {k:'startShield',ic:'🛡', nm:'Escudo inicial',            desc:'Empieza cada partida con escudo',  max:1, cost:l=>400},
+  {k:'blasterUpg', ic:'🔫', nm:'Blaster mejorado',          desc:'Mayor alcance y cadencia de disparo (+60 px y -0.05 s por nivel)', max:3, cost:l=>220*(l+1)},
+];
+
+const MISSION_POOL = [
+  {type:'height', goals:[150,250,400,600], rw:g=>({coins:Math.round(g/3), gems:g>=400?2:1}), desc:g=>`Alcanza ${g} m de altura`},
+  {type:'coins',  goals:[60,120,220],      rw:g=>({coins:Math.round(g/2), gems:1}),           desc:g=>`Recolecta ${g} monedas (hoy)`},
+  {type:'combo',  goals:[3,4,5],           rw:g=>({coins:60*g, gems:1}),                      desc:g=>`Logra un combo ×${g}`},
+  {type:'pu',     goals:[3,5,8],           rw:g=>({coins:30*g, gems:1}),                      desc:g=>`Usa ${g} power-ups (hoy)`},
+];
+function today(){ return new Date().toISOString().slice(0,10); }
+function rollMissions(){
+  const pool=[...MISSION_POOL].sort(()=>Math.random()-.5).slice(0,3);
+  S.missions = pool.map(m=>{
+    const g = m.goals[Math.floor(Math.random()*m.goals.length)];
+    const rw = m.rw(g);
+    return {type:m.type, goal:g, desc:m.desc(g), rw, claimed:false};
+  });
+  S.missionDate = today();
+}
+function checkDaily(){
+  const t=today();
+  if(S.daily.date!==t){ S.daily={date:t,height:0,coins:0,combo:1,pu:0,runs:0}; }
+  if(S.missionDate!==t || !S.missions.length){ rollMissions(); }
+  save();
+}
+function missionValue(m){
+  if(m.type==='height') return Math.round(S.daily.height);
+  if(m.type==='coins')  return S.daily.coins;
+  if(m.type==='combo')  return S.daily.combo;
+  if(m.type==='pu')     return S.daily.pu;
+  return 0;
+}
+
+/* ===================== LOGROS ===================== */
+const ACHS = [
+  {id:'h100',  ic:'🧗', nm:'Primer ascenso', desc:'Alcanza 100 m',       rw:{coins:50,gems:0},  ok:s=>s.maxH>=100},
+  {id:'h250',  ic:'⛰', nm:'Las alturas',     desc:'Alcanza 250 m',       rw:{coins:100,gems:1}, ok:s=>s.maxH>=250},
+  {id:'h500',  ic:'☁️', nm:'Entre las nubes', desc:'Alcanza 500 m',       rw:{coins:200,gems:2}, ok:s=>s.maxH>=500},
+  {id:'h1000', ic:'🚀', nm:'Estratósfera',    desc:'Alcanza 1000 m',      rw:{coins:500,gems:5}, ok:s=>s.maxH>=1000},
+  {id:'c5',    ic:'🔗', nm:'Cadena',          desc:'Logra un combo ×5',   rw:{coins:80,gems:1},  ok:s=>s.maxCombo>=5},
+  {id:'c6',    ic:'⚡', nm:'Combo máximo',     desc:'Logra un combo ×6',   rw:{coins:150,gems:2}, ok:s=>s.maxCombo>=6},
+  {id:'coin1k',ic:'💰', nm:'Monedero',        desc:'Junta 1000 monedas en total', rw:{coins:0,gems:2}, ok:s=>s.totalCoins>=1000},
+  {id:'r10',   ic:'🎮', nm:'Persistente',     desc:'Juega 10 partidas',   rw:{coins:60,gems:0},  ok:s=>s.runs>=10},
+  {id:'r50',   ic:'🔥', nm:'Adicto a la torre',desc:'Juega 50 partidas',  rw:{coins:250,gems:2}, ok:s=>s.runs>=50},
+  {id:'pu25',  ic:'🎁', nm:'Coleccionista',   desc:'Usa 25 power-ups',    rw:{coins:120,gems:1}, ok:s=>s.pu>=25},
+  {id:'sh',    ic:'🛡', nm:'Blindado',         desc:'Sobrevive un golpe con escudo', rw:{coins:60,gems:0}, ok:s=>s.shieldSaves>=1},
+  {id:'rk',    ic:'🧨', nm:'¡Despegue!',       desc:'Usa un cohete',       rw:{coins:40,gems:0},  ok:s=>s.rockets>=1},
+  {id:'rev5',  ic:'❤️', nm:'Segunda vida',     desc:'Revive 5 veces',      rw:{coins:100,gems:1}, ok:s=>s.revives>=5},
+  {id:'allsk', ic:'🎨', nm:'Fashionista',      desc:'Consigue todas las skins de la tienda', rw:{coins:0,gems:3}, ok:s=>SKINS.filter((k,i)=>k.cur!=='pass').every((k,i)=>S.owned.includes(SKINS.indexOf(k)))},
+];
+function checkAchievements(){
+  for(const a of ACHS){
+    if(!S.ach[a.id] && a.ok(S.stats)){
+      S.ach[a.id]=true; S.coins+=a.rw.coins; S.gems+=a.rw.gems;
+      const r=[]; if(a.rw.coins)r.push('+'+a.rw.coins+'🪙'); if(a.rw.gems)r.push('+'+a.rw.gems+'💎');
+      toast('🏅 ¡Logro! '+a.nm+(r.length?' '+r.join(' '):''));
+    }
+  }
+}
+
+/* ===================== RANKING LOCAL ===================== */
+const BOT_NAMES=['Aria','Nico','Zuri','Kai','Luna','Theo','Mía','Rex','Sol','Iván'];
+function seedLeaderboard(){
+  if(S.lb && S.lb.length) return;
+  const bases=[140,260,400,560,760,980,1240,1560,1950];
+  S.lb = bases.map((b,i)=>({name:BOT_NAMES[i], score:b+Math.floor(Math.random()*40), bot:true}));
+}
+function submitScore(h){
+  h=Math.round(h);
+  // entrada del jugador: mantener solo su mejor
+  const mine=S.lb.find(e=>e.you);
+  if(mine){ if(h>mine.score) mine.score=h; }
+  else S.lb.push({name:'TÚ', score:h, you:true});
+  // si supera a todos los bots, sube el listón con un bot nuevo más fuerte
+  const top=Math.max(...S.lb.filter(e=>e.bot).map(e=>e.score));
+  if(h>top){ S.lb.push({name:BOT_NAMES[Math.floor(Math.random()*BOT_NAMES.length)], score:h+Math.floor(20+Math.random()*120), bot:true}); }
+  S.lb.sort((a,b)=>b.score-a.score);
+  S.lb=S.lb.slice(0,12);
+  save();
+}
+
+/* ===================== COFRE DIARIO ===================== */
+function daysBetween(a,b){ return Math.round((new Date(b)-new Date(a))/86400000); }
+function chestAvailable(){ return S.chest.last!==today(); }
+function openChest(){
+  if(!chestAvailable()) return null;
+  const t=today();
+  const gap = S.chest.last ? daysBetween(S.chest.last,t) : 99;
+  S.chest.streak = (gap===1) ? S.chest.streak+1 : 1;
+  S.chest.last = t;
+  const st=S.chest.streak;
+  const coins = 40 + Math.min(st,7)*20;     // 60..180
+  const gems  = (st%3===0) ? 5 : 1;          // bonus cada 3 días
+  S.coins+=coins; S.gems+=gems;
+  addPassXP(30);
+  save();
+  return {coins, gems, streak:st};
+}
+
+/* ===================== PASE DE TEMPORADA ===================== */
+const SEASON_DAYS=30, XP_PER=250, MAXLVL=30;
+const PASS_FREE=[], PASS_PREM=[];
+for(let L=1; L<=MAXLVL; L++){
+  // carril gratis (modesto)
+  let f;
+  if(L===15) f={skin:6};                       // skin gratis a mitad de temporada (Aurora)
+  else if(L%5===0) f={gems:1};
+  else f={coins:40+Math.floor(L/3)*10};
+  PASS_FREE.push(f);
+  // carril premium (generoso)
+  let p;
+  if(L===1) p={skin:7};                         // skin premium de bienvenida (Vóltico)
+  else if(L===MAXLVL) p={skin:8};               // skin dorada al completar
+  else if(L%4===0) p={gems:3};
+  else if(L%3===0) p={coins:120+L*5};
+  else p={coins:80+L*4};
+  PASS_PREM.push(p);
+}
+function passLevel(){ return Math.min(MAXLVL, Math.floor(S.pass.xp/XP_PER)); }
+function passDaysLeft(){ return Math.max(0, SEASON_DAYS - daysBetween(S.pass.start, today())); }
+function addPassXP(n){ S.pass.xp = Math.min(MAXLVL*XP_PER, S.pass.xp + n); }
+function checkSeason(){
+  if(!S.pass.start){ S.pass.start=today(); save(); return; }
+  if(passDaysLeft()<=0){
+    S.pass.season++; S.pass.xp=0; S.pass.premium=false; S.pass.cf=[]; S.pass.cp=[]; S.pass.start=today(); save();
+  }
+}
+function rewardLabel(r){ if(r.coins) return r.coins+' 🪙'; if(r.gems) return r.gems+' 💎'; if(r.skin!=null) return '🎨 '+SKINS[r.skin].nm; return ''; }
+function grantReward(r){
+  if(r.coins) S.coins+=r.coins;
+  if(r.gems) S.gems+=r.gems;
+  if(r.skin!=null && !S.owned.includes(r.skin)) S.owned.push(r.skin);
+}
+function passClaimable(track, L){
+  const lvl=passLevel();
+  if(lvl < L) return false;
+  if(track==='prem' && !S.pass.premium) return false;
+  return !(track==='free'?S.pass.cf:S.pass.cp).includes(L);
+}
+function claimPass(track, L){
+  if(!passClaimable(track, L)) return false;
+  const r = (track==='free'?PASS_FREE:PASS_PREM)[L-1];
+  grantReward(r);
+  (track==='free'?S.pass.cf:S.pass.cp).push(L);
+  beep(880,.08,'triangle',.2); beep(1100,.1,'triangle',.18);
+  toast('🎟 Recompensa: '+rewardLabel(r));
+  save();
+  return true;
+}
+function claimAllPass(){
+  let n=0;
+  for(let L=1; L<=MAXLVL; L++){
+    if(passClaimable('free',L)){ const r=PASS_FREE[L-1]; grantReward(r); S.pass.cf.push(L); n++; }
+    if(passClaimable('prem',L)){ const r=PASS_PREM[L-1]; grantReward(r); S.pass.cp.push(L); n++; }
+  }
+  if(n){ beep(880,.1,'triangle',.2); beep(1320,.12,'triangle',.18); toast('🎟 ¡'+n+' recompensas reclamadas!'); save(); }
+  return n;
+}
+function passClaimableCount(){
+  let n=0;
+  for(let L=1; L<=MAXLVL; L++){ if(passClaimable('free',L))n++; if(passClaimable('prem',L))n++; }
+  return n;
+}
+
+/* ===================== CANVAS / AUDIO ===================== */
+const cv=document.getElementById('cv'), cx=cv.getContext('2d');
+let W=0,H=0,DPR=1;
+function resize(){ DPR=Math.min(window.devicePixelRatio||1,2); W=cv.clientWidth; H=cv.clientHeight; cv.width=W*DPR; cv.height=H*DPR; cx.setTransform(DPR,0,0,DPR,0,0); }
+window.addEventListener('resize', resize);
+
+let AC=null;
+function ensureAC(){ if(!AC){ try{ AC=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } if(AC&&AC.state==='suspended') AC.resume(); return AC; }
+function beep(f=440,d=.08,type='square',v=.15){
+  if(!S.sfx) return;
+  try{ ensureAC(); if(!AC) return;
+    const o=AC.createOscillator(),g=AC.createGain(); o.type=type; o.frequency.value=f;
+    g.gain.setValueAtTime(v,AC.currentTime); g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+d);
+    o.connect(g); g.connect(AC.destination); o.start(); o.stop(AC.currentTime+d);
+  }catch(e){}
+}
+
+/* música de fondo procedural (sin archivos): bajo + arpegio que sube de intensidad con la altura */
+const Music = {
+  on:false, timer:null, next:0, step:0,
+  bass:[110.00,110.00,146.83,130.81],          // A2 A2 D3 C3
+  scale:[220.00,261.63,293.66,329.63,392.00,440.00,523.25], // pentatónica A
+  start(){
+    if(this.on || !S.music) return; ensureAC(); if(!AC) return;
+    this.on=true; this.step=0; this.next=AC.currentTime+0.1;
+    this.timer=setInterval(()=>this.sched(),60);
+  },
+  stop(){ this.on=false; if(this.timer){ clearInterval(this.timer); this.timer=null; } },
+  note(f,t,d,type,v){ try{ const o=AC.createOscillator(),g=AC.createGain(); o.type=type; o.frequency.value=f;
+    g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(v,t+0.012); g.gain.exponentialRampToValueAtTime(0.0001,t+d);
+    o.connect(g); g.connect(AC.destination); o.start(t); o.stop(t+d+0.03); }catch(e){} },
+  sched(){
+    if(!AC) return;
+    const intensity = Math.min(1, (G.running?G.hMax:0)/600);
+    while(this.next < AC.currentTime+0.25){
+      const t=this.next, s=this.step;
+      if(s%4===0) this.note(this.bass[Math.floor(s/4)%4], t, 0.34, 'triangle', 0.09);
+      const n=this.scale[(s*3)%this.scale.length];
+      this.note(n, t, 0.13, 'square', 0.028 + intensity*0.022);
+      if(intensity>0.45 && s%2===0) this.note(n*2, t, 0.07, 'square', 0.016);
+      this.step++; this.next += 0.18;
+    }
+  }
+};
+
+/* ===================== JUEGO ===================== */
+const WALL=46;
+const GRAV=2000, AIR_T=0.42, RISE=70;
+const PU={
+  shield: {ic:'🛡',c:'#3fe0ff', nm:'Escudo'},
+  magnet: {ic:'🧲',c:'#b07dff', nm:'Imán'},
+  rocket: {ic:'🚀',c:'#ff5d8f', nm:'Cohete'},
+  slow:   {ic:'⏳',c:'#7dff6a', nm:'Cámara lenta'},
+  frenzy: {ic:'✨',c:'#ffd23f', nm:'Lluvia de oro'},
+  ghost:  {ic:'👻',c:'#cdd3ff', nm:'Fantasma'},
+  blaster:{ic:'🔫',c:'#ff9d3f', nm:'Blaster'},
+};
+// pesos de aparición: comunes salen más, raros menos
+const PU_POOL=['shield','shield','magnet','magnet','slow','slow','rocket','frenzy','ghost','blaster','blaster','blaster'];
+
+const G={
+  running:false, over:false, reviveUsed:false, lives:3,
+  p:{x:0,y:0,vx:0,vy:0,side:'L',onWall:true,r:14,inv:0,buf:0,shield:false,magnetT:0,rocketT:0,slowT:0,frenzyT:0,ghostT:0,blasterT:0,shootCD:0},
+  camY:0, hMax:0, coinsRun:0, combo:0, comboT:0, bestCombo:1, puUsed:0,
+  spikes:[], coins:[], drones:[], saws:[], pickups:[], parts:[], bullets:[],
+  genY:0, shake:0, flash:0, flashC:'255,60,90', nextMile:100, beatRecord:false,
+};
+const px = side => side==='L' ? WALL+G.p.r : W-WALL-G.p.r;
+
+function resetRun(keep=false){
+  const p=G.p;
+  G.over=false; G.earned=0;
+  if(!keep){
+    G.hMax=0; G.coinsRun=0; G.bestCombo=1; G.puUsed=0; G.beatRecord=false; G.nextMile=100;
+    G.spikes=[]; G.coins=[]; G.drones=[]; G.saws=[]; G.pickups=[]; G.genY=-420;
+    G.reviveUsed=false;
+  }
+  G.combo=0; G.comboT=0; G.parts=[]; G.bullets=[]; G.shake=0; G.flash=0;
+  G.lives = keep ? 1 : 3;
+  p.side='L'; p.onWall=true; p.vx=0; p.vy=0; p.buf=0;
+  p.y = keep ? p.y : 0; p.x = px('L');
+  p.inv = keep ? 2.2 : 0; p.magnetT=0; p.rocketT=0; p.slowT=0; p.frenzyT=0; p.ghostT=0; p.blasterT=0; p.shootCD=0;
+  p.shield = keep ? p.shield : !!S.up.startShield;
+  if(keep){
+    G.spikes=G.spikes.filter(s=>Math.abs(s.y-p.y)>260);
+    G.drones=G.drones.filter(d=>Math.abs(d.y-p.y)>260);
+    G.saws  =G.saws.filter(s=>Math.abs(s.baseY-p.y)>300);
+  }
+  G.camY = p.y - H*0.62;
+}
+
+function generate(){
+  // diff=0 en los primeros 80m, llega a 1 en 1080m (curva más suave)
+  const diff=Math.min(1,Math.max(0,(G.hMax-80)/1000));
+  const luckBonus = S.up.luck*0.04;
+  while(G.genY > G.camY - H*1.5){
+    const y=G.genY, safeIntro=G.hMax<65; // zona segura ampliada: 45→65m
+    // pinchos: base reducida (.18→.13), tamaño inicial menor, pasos más separados
+    if(!safeIntro && Math.random() < .13+diff*.40){
+      const side=Math.random()<.5?'L':'R';
+      const sameClose=G.spikes.some(s=>s.side===side && Math.abs(s.y-y)<230);
+      const bothBlocked=G.spikes.some(s=>s.side!==side && Math.abs(s.y-y)<140);
+      if(!sameClose && !bothBlocked){ G.spikes.push({side, y, h:18+Math.random()*22*(0.3+diff)}); }
+    }
+    // dron: arranca más lento al principio
+    if(G.hMax>130 && Math.random() < .05+diff*.20){
+      G.drones.push({x:W/2, y:y-60, vx:(.45+diff*1.8)*(Math.random()<.5?1:-1), r:13});
+    }
+    // sierra oscilante
+    if(G.hMax>260 && Math.random() < .04+diff*.16){
+      G.saws.push({x:WALL+50+Math.random()*(W-2*WALL-100), baseY:y, amp:50+Math.random()*60, ph:Math.random()*6, sp:1.5+Math.random()*1.5, r:18, rot:0});
+    }
+    // power-up: 3.5%→10% para que aparezca cada ~140m en vez de cada ~450m
+    if(Math.random() < .10+luckBonus){
+      const pool = G.hMax<65 ? PU_POOL.filter(t=>t!=='blaster') : PU_POOL;
+      G.pickups.push({x:WALL+50+Math.random()*(W-2*WALL-100), y:y-40, t:pool[Math.floor(Math.random()*pool.length)], r:15, a:0});
+    }
+    // monedas
+    if(Math.random() < .55){
+      const cxm=WALL+60+Math.random()*(W-2*(WALL+60));
+      for(let i=0;i<3;i++) G.coins.push({x:cxm+(i-1)*26, y:y-30-Math.abs(i-1)*14, r:9, a:Math.random()*6});
+    }
+    G.genY -= 150+Math.random()*70;
+  }
+  const lim=G.camY+H+200;
+  G.spikes=G.spikes.filter(s=>s.y<lim); G.coins=G.coins.filter(c=>c.y<lim);
+  G.drones=G.drones.filter(d=>d.y<lim); G.saws=G.saws.filter(s=>s.baseY<lim+200);
+  G.pickups=G.pickups.filter(p=>p.y<lim);
+}
+
+function jump(){
+  if(!G.running||G.over) return;
+  const p=G.p;
+  if(p.rocketT>0) return;
+  if(!p.onWall){ p.buf=0.18; return; }
+  const to=p.side==='L'?'R':'L';
+  const gap=(W-WALL-p.r)-(WALL+p.r);
+  p.onWall=false;
+  p.vx=(to==='R'?1:-1)*(gap/AIR_T);
+  p.vy=(-RISE-0.5*GRAV*AIR_T*AIR_T)/AIR_T;
+  p.side=to;
+  beep(520,.06,'square',.12);
+  burst(p.x,p.y,6,SKINS[S.skin].t);
+}
+
+function activatePU(t){
+  const p=G.p; G.puUsed++;
+  if(t==='shield'){ p.shield=true; beep(700,.12,'triangle',.2); toast('🛡 Escudo activado'); }
+  else if(t==='magnet'){ p.magnetT=Math.max(p.magnetT,6+S.up.magnet*1.5); beep(880,.1,'triangle',.2); toast('🧲 Imán activado'); }
+  else if(t==='rocket'){ p.rocketT=1.3; p.inv=Math.max(p.inv,1.4); S.stats.rockets++; beep(300,.2,'sawtooth',.2); setTimeout(()=>beep(900,.2,'sawtooth',.15),60); toast('🚀 ¡Despegue!'); checkAchievements(); }
+  else if(t==='slow'){ p.slowT=Math.max(p.slowT,4.5); beep(520,.18,'sine',.18); setTimeout(()=>beep(390,.2,'sine',.16),80); toast('⏳ Cámara lenta'); }
+  else if(t==='frenzy'){ p.frenzyT=Math.max(p.frenzyT,6); beep(1046,.08,'triangle',.18); setTimeout(()=>beep(1318,.1,'triangle',.16),70);
+    // lluvia de monedas hacia arriba
+    for(let i=0;i<14;i++){ G.coins.push({x:WALL+40+Math.random()*(W-2*WALL-80), y:p.y-60-i*38, r:9, a:Math.random()*6}); }
+    toast('✨ ¡Lluvia de oro! Monedas ×2'); }
+  else if(t==='ghost'){ p.ghostT=Math.max(p.ghostT,3.2); p.inv=Math.max(p.inv,3.2); beep(660,.15,'sine',.16); setTimeout(()=>beep(880,.18,'sine',.13),90); toast('👻 Fantasma: atraviesas todo'); }
+  else if(t==='blaster'){ p.blasterT=Math.max(p.blasterT,8); p.shootCD=0; beep(440,.08,'sawtooth',.15); setTimeout(()=>beep(660,.1,'sawtooth',.12),60); toast('🔫 ¡Blaster! Disparo automático activo'); }
+  G.flash=.6; G.flashC = (PU[t]?hexToRgb(PU[t].c):'120,220,255');
+}
+function hexToRgb(h){ const n=parseInt(h.slice(1),16); return ((n>>16)&255)+','+((n>>8)&255)+','+(n&255); }
+
+function burst(x,y,n,c,sp=3){ for(let i=0;i<n;i++){const a=Math.random()*6.28,s=Math.random()*sp+1; G.parts.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,l:1,c});} }
+
+function die(){
+  const p=G.p;
+  if(p.inv>0) return;
+  if(p.shield){ p.shield=false; p.inv=1.4; G.shake=10; G.flash=.7; G.flashC='120,220,255';
+    S.stats.shieldSaves++; beep(420,.18,'triangle',.2); burst(p.x,p.y,16,'#3fe0ff',5); toast('🛡 ¡Escudo te salvó!'); checkAchievements(); save(); return; }
+  if(p.blasterT>0){ p.blasterT=0; p.shootCD=0; p.inv=1.2; G.shake=8; G.flash=.6; G.flashC='255,157,63';
+    beep(320,.15,'sawtooth',.18); burst(p.x,p.y,12,'#ff9d3f',4); toast('🔫 ¡Perdiste el Blaster!'); return; }
+  // sistema de vidas
+  G.lives--;
+  if(G.lives>0){
+    p.inv=2.5; G.shake=12; G.flash=.85; G.flashC='255,60,90';
+    beep(200,.22,'sawtooth',.2); burst(p.x,p.y,14,'#ff5d8f',5);
+    const h='❤️'.repeat(G.lives)+'🖤'.repeat(3-G.lives);
+    toast(G.lives===1?`${h} ¡Última vida!`:h);
+    return;
+  }
+  G.over=true; G.running=false; G.shake=14; G.flash=1; G.flashC='255,60,90';
+  beep(140,.3,'sawtooth',.2); setTimeout(()=>beep(90,.4,'sawtooth',.18),100);
+  burst(p.x,p.y,26,'#ff5d8f',6);
+  // recompensa de monedas con multiplicador
+  const mult=1+0.15*S.up.coinMult;
+  const earned=Math.round(G.coinsRun*mult);
+  G.earned=earned; S.coins+=earned;
+  if(G.hMax>S.best) S.best=Math.round(G.hMax);
+  // registrar progreso diario
+  S.daily.height=Math.max(S.daily.height,G.hMax);
+  S.daily.coins+=G.coinsRun;
+  S.daily.combo=Math.max(S.daily.combo,G.bestCombo);
+  S.daily.pu+=G.puUsed;
+  // estadísticas de por vida + ranking + logros
+  S.stats.runs++; S.stats.totalCoins+=earned; S.stats.pu+=G.puUsed;
+  S.stats.maxH=Math.max(S.stats.maxH,Math.round(G.hMax));
+  S.stats.maxCombo=Math.max(S.stats.maxCombo,G.bestCombo);
+  // XP del pase de temporada
+  G.passXp = Math.round(G.hMax*0.7) + G.coinsRun;
+  addPassXP(G.passXp);
+  submitScore(G.hMax);
+  claimMissions();
+  checkAchievements();
+  save();
+  setTimeout(showGameOver,700);
+}
+
+function claimMissions(){
+  for(const m of S.missions){
+    if(!m.claimed && missionValue(m)>=m.goal){
+      m.claimed=true; S.coins+=m.rw.coins||0; S.gems+=m.rw.gems||0; addPassXP(40);
+      toast(`🎯 Misión completa! +${m.rw.coins}🪙 +${m.rw.gems}💎`);
+    }
+  }
+}
+
+function update(dt){
+  const p=G.p;
+  if(G.over){ stepParts(dt); return; }
+  // timers en tiempo real
+  if(p.inv>0) p.inv-=dt;
+  if(p.buf>0) p.buf-=dt;
+  if(p.magnetT>0) p.magnetT-=dt;
+  if(p.slowT>0) p.slowT-=dt;
+  if(p.frenzyT>0) p.frenzyT-=dt;
+  if(p.ghostT>0){ p.ghostT-=dt; p.inv=Math.max(p.inv,0.06); }   // invulnerable mientras dura
+  if(p.blasterT>0){
+    p.blasterT-=dt; p.shootCD-=dt;
+    if(p.shootCD<=0){
+      const lvl=S.up.blasterUpg||0;
+      const range=280+lvl*60;
+      p.shootCD=Math.max(0.15,0.3-lvl*0.05);
+      const pro=S.pass.premium;   // pase premium → 3 proyectiles simultáneos
+      const maxT=pro?3:1;
+      const threats=[];
+      const addT=(ox,oy)=>{ const d=Math.hypot(ox-p.x,oy-p.y); if(d<range) threats.push({x:ox,y:oy,d}); };
+      for(const s of G.spikes) addT(s.side==='L'?WALL+10:W-WALL-10, s.y-s.h*0.5);
+      for(const d of G.drones) addT(d.x,d.y);
+      for(const s of G.saws)   addT(s.x,s.y);
+      threats.sort((a,b)=>a.d-b.d);
+      const targets=threats.slice(0,maxT);
+      const spd=pro?800:620;
+      if(!targets.length){
+        G.bullets.push({x:p.x,y:p.y,vx:0,vy:-spd,pro,age:0});
+      }
+      for(const t of targets){
+        const d=t.d||1;
+        G.bullets.push({x:p.x,y:p.y,vx:(t.x-p.x)/d*spd,vy:(t.y-p.y)/d*spd,pro,age:0});
+      }
+      beep(pro?550:780,.05,'square',pro?.14:.1);
+    }
+  }
+  const wdt = p.slowT>0 ? dt*0.45 : dt;                          // ⏳ cámara lenta ralentiza el mundo
+
+  if(p.rocketT>0){
+    p.rocketT-=dt; p.onWall=false; p.inv=Math.max(p.inv,.1);
+    p.x += (W/2 - p.x)*Math.min(1,dt*8);
+    p.y -= 720*dt;
+    if(Math.random()<.8) G.parts.push({x:p.x+(Math.random()-.5)*10,y:p.y+p.r,vx:(Math.random()-.5)*2,vy:3+Math.random()*2,l:.7,c:'#ff9d3f'});
+    if(p.rocketT<=0){ // re-engancha a pared más cercana
+      const to=(p.x<W/2)?'L':'R'; p.side=to; p.vx=(to==='R'?1:-1)*((W-2*WALL)/AIR_T); p.vy=-120; p.onWall=false;
+    }
+  } else if(p.onWall){
+    p.vy=Math.min(p.vy+200*wdt,55); p.y+=p.vy*wdt; p.x=px(p.side);
+  } else {
+    p.vy+=GRAV*wdt; p.y+=p.vy*wdt; p.x+=p.vx*wdt;
+    const tx=px(p.side);
+    if((p.side==='R'&&p.x>=tx)||(p.side==='L'&&p.x<=tx)){
+      p.x=tx; p.onWall=true; p.vy=0; p.vx=0; burst(p.x,p.y,4,'#fff',2);
+      for(const s of G.spikes){ if(s.side===p.side && p.y>s.y-s.h-p.r && p.y<s.y+p.r){ die(); return; } }
+      if(p.buf>0){ p.buf=0; jump(); }
+    }
+  }
+  // pinchos al deslizar
+  if(p.onWall && p.inv<=0){
+    for(const s of G.spikes){ if(s.side===p.side && p.y>s.y-s.h-p.r && p.y<s.y+p.r){ die(); return; } }
+  }
+  // drones
+  for(const d of G.drones){
+    d.x+=d.vx*60*wdt; if(d.x<WALL+30||d.x>W-WALL-30) d.vx*=-1;
+    const dx=d.x-p.x, dy=d.y-p.y;
+    if(p.inv<=0 && dx*dx+dy*dy<(d.r+p.r-3)**2){ die(); return; }
+  }
+  // sierras
+  for(const s of G.saws){
+    s.rot+=wdt*10; s.y=s.baseY+Math.sin(performance.now()/1000*s.sp+s.ph)*s.amp;
+    const dx=s.x-p.x, dy=s.y-p.y;
+    if(p.inv<=0 && dx*dx+dy*dy<(s.r+p.r-4)**2){ die(); return; }
+  }
+  // power-ups
+  for(let i=G.pickups.length-1;i>=0;i--){
+    const u=G.pickups[i]; u.a+=dt*3;
+    const dx=u.x-p.x, dy=u.y-p.y;
+    if(dx*dx+dy*dy<(u.r+p.r+4)**2){ activatePU(u.t); G.pickups.splice(i,1); }
+  }
+  // combos + monedas (con imán y/o cohete)
+  G.comboT-=dt; if(G.comboT<=0) G.combo=0;
+  const magR = p.rocketT>0 ? 220 : (p.magnetT>0 ? 150 : 0); // el cohete barre un radio mayor
+  const pull = p.rocketT>0 ? 12 : 7;                          // y tira más fuerte
+  for(let i=G.coins.length-1;i>=0;i--){
+    const c=G.coins[i]; c.a+=dt*5;
+    const dx=c.x-p.x, dy=c.y-p.y, d2=dx*dx+dy*dy;
+    if(magR && d2<magR*magR){ c.x += (p.x-c.x)*Math.min(1,dt*pull); c.y += (p.y-c.y)*Math.min(1,dt*pull); }
+    if(d2<(c.r+p.r+6)**2){
+      G.coins.splice(i,1); G.combo=Math.min(G.combo+1,25); G.comboT=2;
+      const fre=p.frenzyT>0?2:1; // ✨ lluvia de oro dobla el valor
+      const mult=(1+Math.floor(G.combo/5))*fre; G.coinsRun+=mult; G.bestCombo=Math.max(G.bestCombo,1+Math.floor(G.combo/5));
+      beep(880+G.combo*30,.05,'triangle',.12); burst(c.x,c.y,5,'#ffd23f',2.5);
+      if(mult>1){ const cb=document.getElementById('combo'); cb.textContent=(fre>1?'×2 ORO ':'COMBO ×')+mult; cb.style.opacity=1; clearTimeout(cb._t); cb._t=setTimeout(()=>cb.style.opacity=0,900); }
+    }
+  }
+  // altura, récord, hitos
+  const h=Math.max(0,-p.y/10); if(h>G.hMax) G.hMax=h;
+  if(!G.beatRecord && S.best>0 && G.hMax>S.best){ G.beatRecord=true; showBanner('¡NUEVO RÉCORD!'); beep(1046,.12,'triangle',.2); }
+  if(G.hMax>=G.nextMile){ showBanner(G.nextMile+' m 🔥'); beep(660+G.nextMile*0.2,.1,'triangle',.16); G.nextMile+=100; }
+  // cámara
+  const target=p.y-H*0.62; if(target<G.camY) G.camY+=(target-G.camY)*Math.min(1,dt*6);
+  G.camY-=(12+Math.min(40,G.hMax*0.06))*wdt;
+  if(p.y>G.camY+H+40){ die(); return; }
+  // proyectiles del blaster
+  for(let i=G.bullets.length-1;i>=0;i--){
+    const b=G.bullets[i]; b.x+=b.vx*dt; b.y+=b.vy*dt; b.age+=dt;
+    if(b.y<G.camY-200||b.age>2.5){ G.bullets.splice(i,1); continue; }
+    const br=b.pro?7:5; let hit=false;
+    for(let j=G.spikes.length-1;j>=0&&!hit;j--){
+      const s=G.spikes[j]; const sx=s.side==='L'?WALL+10:W-WALL-10,sy=s.y-s.h*0.5;
+      if(Math.hypot(b.x-sx,b.y-sy)<br+18){ burst(sx,sy,8,'#ff5d8f',3); G.spikes.splice(j,1); hit=true; }
+    }
+    for(let j=G.drones.length-1;j>=0&&!hit;j--){
+      const d=G.drones[j];
+      if(Math.hypot(b.x-d.x,b.y-d.y)<br+d.r-2){ burst(d.x,d.y,10,'#3fe0ff',4); G.drones.splice(j,1); hit=true; }
+    }
+    for(let j=G.saws.length-1;j>=0&&!hit;j--){
+      const s=G.saws[j];
+      if(Math.hypot(b.x-s.x,b.y-s.y)<br+s.r){ burst(s.x,s.y,12,'#c8ccdd',4); G.saws.splice(j,1); hit=true; }
+    }
+    if(hit){ beep(880,.05,'square',.1); G.bullets.splice(i,1); }
+  }
+  generate(); stepParts(dt);
+  if(G.shake>0) G.shake=Math.max(0,G.shake-dt*40);
+  if(G.flash>0) G.flash=Math.max(0,G.flash-dt*2);
+  updatePuHud();
+}
+
+function stepParts(dt){ for(let i=G.parts.length-1;i>=0;i--){ const q=G.parts[i]; q.x+=q.vx; q.y+=q.vy; q.vy+=.15; q.l-=dt*1.6; if(q.l<=0) G.parts.splice(i,1);} }
+
+/* ===================== RENDER ===================== */
+const ZONES=[[120,'#1a2150','#3a2a68'],[350,'#241f5e','#7a3a8a'],[700,'#120f38','#3a2a68'],[99999,'#05030f','#1a1040']];
+function zoneColors(h){ let i=0; while(h>ZONES[i][0]) i++; return ZONES[i]; }
+function draw(){
+  const h=G.hMax, z=zoneColors(h);
+  const g=cx.createLinearGradient(0,0,0,H); g.addColorStop(0,z[1]); g.addColorStop(1,z[2]);
+  cx.fillStyle=g; cx.fillRect(0,0,W,H);
+  // estrellas
+  cx.save(); const sy=(G.camY*0.3)%H; cx.globalAlpha=Math.min(1,h/300)*0.8+0.15; cx.fillStyle='#fff';
+  for(let i=0;i<26;i++){ const x=(i*97)%W, y=((i*211-sy)%H+H)%H; cx.fillRect(x,y,2,2);} cx.restore();
+
+  cx.save();
+  if(G.shake>0) cx.translate((Math.random()-.5)*G.shake,(Math.random()-.5)*G.shake);
+  cx.translate(0,-G.camY);
+
+  // paredes
+  const wg=cx.createLinearGradient(0,G.camY,0,G.camY+H); wg.addColorStop(0,'#10142e'); wg.addColorStop(1,'#0a0c1f');
+  cx.fillStyle=wg; cx.fillRect(0,G.camY-50,WALL,H+100); cx.fillRect(W-WALL,G.camY-50,WALL,H+100);
+  cx.strokeStyle='rgba(255,255,255,.06)'; const b0=Math.floor(G.camY/40)*40;
+  for(let y=b0;y<G.camY+H+40;y+=40){ cx.strokeRect(0,y,WALL,40); cx.strokeRect(W-WALL,y,WALL,40);}
+  cx.fillStyle='rgba(63,224,255,.5)'; cx.fillRect(WALL-2,G.camY-50,2,H+100); cx.fillRect(W-WALL,G.camY-50,2,H+100);
+
+  // pinchos
+  for(const s of G.spikes){
+    cx.fillStyle='#ff5d8f'; const dir=s.side==='L'?1:-1, bx=s.side==='L'?WALL:W-WALL; const n=Math.max(2,Math.round(s.h/22));
+    for(let i=0;i<n;i++){ const yy=s.y-s.h+i*(s.h/n); cx.beginPath(); cx.moveTo(bx,yy); cx.lineTo(bx,yy+s.h/n); cx.lineTo(bx+dir*16,yy+s.h/(2*n)); cx.closePath(); cx.fill(); }
+  }
+  // monedas
+  for(const c of G.coins){ const sc=Math.abs(Math.sin(c.a)); cx.save(); cx.translate(c.x,c.y); cx.scale(.4+.6*sc,1);
+    cx.fillStyle='#ffd23f'; cx.beginPath(); cx.arc(0,0,c.r,0,7); cx.fill(); cx.fillStyle='#b07b00'; cx.beginPath(); cx.arc(0,0,c.r*.55,0,7); cx.fill(); cx.restore(); }
+  // drones
+  for(const d of G.drones){ cx.fillStyle='#3fe0ff'; cx.beginPath(); cx.arc(d.x,d.y,d.r,0,7); cx.fill();
+    cx.fillStyle='#0a0c1f'; cx.beginPath(); cx.arc(d.x,d.y,d.r*.5,0,7); cx.fill();
+    cx.fillStyle='#ff5d8f'; cx.fillRect(d.x-d.r-6,d.y-2,6,4); cx.fillRect(d.x+d.r,d.y-2,6,4); }
+  // sierras
+  for(const s of G.saws){ cx.save(); cx.translate(s.x,s.y); cx.rotate(s.rot); cx.fillStyle='#c8ccdd';
+    for(let i=0;i<8;i++){ cx.rotate(Math.PI/4); cx.beginPath(); cx.moveTo(0,-s.r); cx.lineTo(5,-s.r-6); cx.lineTo(-5,-s.r-6); cx.closePath(); cx.fill(); }
+    cx.beginPath(); cx.arc(0,0,s.r,0,7); cx.fill(); cx.fillStyle='#1d2342'; cx.beginPath(); cx.arc(0,0,s.r*.4,0,7); cx.fill(); cx.restore(); }
+  // power-ups
+  for(const u of G.pickups){ const yo=Math.sin(u.a)*4; cx.save(); cx.translate(u.x,u.y+yo);
+    cx.shadowColor=PU[u.t].c; cx.shadowBlur=16; cx.fillStyle=PU[u.t].c; cx.beginPath(); cx.arc(0,0,u.r,0,7); cx.fill(); cx.shadowBlur=0;
+    cx.font='16px serif'; cx.textAlign='center'; cx.textBaseline='middle'; cx.fillText(PU[u.t].ic,0,1); cx.restore(); }
+  // partículas
+  for(const q of G.parts){ cx.globalAlpha=Math.max(0,q.l); cx.fillStyle=q.c; cx.fillRect(q.x-2,q.y-2,4,4);} cx.globalAlpha=1;
+
+  // proyectiles del blaster
+  for(const b of G.bullets){
+    const r=b.pro?7:5;
+    cx.save();
+    // estela 2 puntos atrás
+    cx.globalAlpha=0.32; cx.shadowColor=b.pro?'#ff6600':'#ff2200'; cx.shadowBlur=b.pro?14:8;
+    cx.fillStyle=b.pro?'#ff9900':'#ff3300';
+    cx.beginPath(); cx.arc(b.x-b.vx*0.055,b.y-b.vy*0.055,r*0.65,0,7); cx.fill();
+    cx.globalAlpha=0.16;
+    cx.beginPath(); cx.arc(b.x-b.vx*0.1,b.y-b.vy*0.1,r*0.4,0,7); cx.fill();
+    // núcleo
+    cx.globalAlpha=1; cx.shadowColor=b.pro?'#ff6600':'#ff2200'; cx.shadowBlur=b.pro?22:14;
+    cx.fillStyle=b.pro?'#ffee88':'#ff7755';
+    cx.beginPath(); cx.arc(b.x,b.y,r,0,7); cx.fill();
+    cx.restore();
+  }
+
+  // jugador
+  const p=G.p, sk=SKINS[S.skin];
+  const ghosting=p.ghostT>0;
+  const blink = p.inv>0 && !ghosting && Math.floor(p.inv*10)%2===0; // parpadeo de invulnerabilidad normal
+  if(!blink){
+    cx.save();
+    if(ghosting) cx.globalAlpha=0.45;                              // 👻 translúcido estable
+    if(p.shield){ cx.strokeStyle='#3fe0ff'; cx.lineWidth=3; cx.globalAlpha=(ghosting?0.4:0.8); cx.beginPath(); cx.arc(p.x,p.y,p.r+7,0,7); cx.stroke(); cx.globalAlpha=ghosting?0.45:1; cx.lineWidth=1; }
+    if(p.slowT>0){ cx.strokeStyle='#7dff6a'; cx.lineWidth=2; cx.globalAlpha=.5; cx.beginPath(); cx.arc(p.x,p.y,p.r+11,0,7); cx.stroke(); cx.globalAlpha=ghosting?0.45:1; cx.lineWidth=1; }
+    if(p.blasterT>0){ cx.strokeStyle='#ff9d3f'; cx.lineWidth=2; cx.globalAlpha=.65; cx.beginPath(); cx.arc(p.x,p.y,p.r+17,0,7); cx.stroke(); cx.globalAlpha=ghosting?0.45:1; cx.lineWidth=1; }
+    cx.shadowColor=sk.c; cx.shadowBlur=18; cx.fillStyle=sk.c; cx.beginPath(); cx.arc(p.x,p.y,p.r,0,7); cx.fill(); cx.shadowBlur=0;
+    const ed=p.side==='L'?1:-1; cx.fillStyle='#0b0d1a';
+    cx.beginPath(); cx.arc(p.x+5*ed,p.y-4,3,0,7); cx.fill(); cx.beginPath(); cx.arc(p.x-2*ed,p.y-4,3,0,7); cx.fill();
+    cx.restore();
+    if(!p.onWall && p.rocketT<=0){ cx.fillStyle=sk.t; cx.globalAlpha=ghosting?.25:.5; cx.beginPath(); cx.arc(p.x-p.vx*.02,p.y+5,p.r*.6,0,7); cx.fill(); cx.globalAlpha=1; }
+  }
+  cx.restore();
+  if(G.flash>0){ cx.fillStyle=`rgba(${G.flashC},${G.flash*.35})`; cx.fillRect(0,0,W,H); }
+}
+
+/* ===================== LOOP ===================== */
+let last=0;
+function loop(t){
+  const dt=Math.min(.033,(t-last)/1000)||.016; last=t;
+  if(G.running||G.over) update(dt);
+  draw();
+  if(G.running){
+    document.getElementById('hudHeight').textContent=Math.round(G.hMax)+' m';
+    document.getElementById('hudCoins').textContent=S.coins+G.coinsRun;
+    document.getElementById('hudGems').textContent=S.gems;
+    document.getElementById('hudLives').textContent='❤️'.repeat(Math.max(0,G.lives))+'🖤'.repeat(Math.max(0,3-G.lives));
+  }
+  requestAnimationFrame(loop);
+}
+
+/* ===================== UI ===================== */
+const $=id=>document.getElementById(id);
+const show=id=>$(id).classList.remove('hidden');
+const hide=id=>$(id).classList.add('hidden');
+
+function toast(msg){ const t=$('toasts'); const d=document.createElement('div'); d.className='toast'; d.textContent=msg; t.appendChild(d); setTimeout(()=>d.remove(),2200); }
+function showBanner(txt){ const b=$('banner'); b.textContent=txt; b.style.opacity=1; clearTimeout(b._t); b._t=setTimeout(()=>b.style.opacity=0,1100); }
+function updatePuHud(){
+  const el=$('puHud'); const p=G.p; let html='';
+  const bar=(t,max,c)=>`<div class="pu" style="color:${c}">${PU[t].ic}<div class="bar"><i style="width:${Math.min(100,t==='rocket'?p.rocketT/1.3*100:t==='slow'?p.slowT/4.5*100:t==='frenzy'?p.frenzyT/6*100:t==='ghost'?p.ghostT/3.2*100:t==='blaster'?p.blasterT/8*100:p.magnetT/(6+S.up.magnet*1.5)*100)}%"></i></div></div>`;
+  if(p.shield) html+=`<div class="pu" style="color:#3fe0ff">🛡<span>Escudo</span></div>`;
+  if(p.magnetT>0) html+=bar('magnet',6,'#b07dff');
+  if(p.rocketT>0) html+=bar('rocket',1.3,'#ff5d8f');
+  if(p.slowT>0)   html+=bar('slow',4.5,'#7dff6a');
+  if(p.frenzyT>0) html+=bar('frenzy',6,'#ffd23f');
+  if(p.ghostT>0)   html+=bar('ghost',3.2,'#cdd3ff');
+  if(p.blasterT>0) html+=bar('blaster',8,'#ff9d3f');
+  el.innerHTML=html;
+}
+
+function refreshMenu(){
+  $('mBest').textContent=S.best+' m'; $('mCoins').textContent=S.coins; $('mGems').textContent=S.gems;
+  // misiones badge (en barra inferior)
+  let bdg=$('btnMissions').querySelector('.badge');
+  if(!bdg){ bdg=document.createElement('span'); bdg.className='badge'; $('btnMissions').appendChild(bdg); }
+  const pend=S.missions.filter(m=>!m.claimed && missionValue(m)<m.goal).length;
+  bdg.textContent=pend; bdg.style.display=pend?'flex':'none';
+  // logros badge
+  let abdg=$('btnAch').querySelector('.badge');
+  if(!abdg){ abdg=document.createElement('span'); abdg.className='badge'; $('btnAch').appendChild(abdg); }
+  const newAch = ACHS.some(a=>!S.ach[a.id] && a.ok(S.stats));
+  abdg.style.display = newAch?'flex':'none'; abdg.textContent='!';
+  // cofre
+  const cReady=chestAvailable();
+  $('chestBadge').style.display = cReady?'flex':'none';
+  $('chestState').textContent = cReady ? '¡Cofre gratis!' : 'Cofre diario';
+  $('btnChest').classList.toggle('ready', cReady);
+}
+function startGame(fresh=true){
+  hide('menu'); hide('gameover'); hide('shop'); hide('gemshop'); hide('missions'); hide('upgrades');
+  hide('leaderboard'); hide('achievements'); hide('settings'); hide('chest'); hide('pass');
+  Music.start();
+  show('hud'); resetRun(!fresh); G.running=true;
+  if(fresh){ show('tapHint'); setTimeout(()=>hide('tapHint'),2200); }
+}
+function showGameOver(){
+  hide('hud');
+  $('goHeight').textContent=Math.round(G.hMax)+' m'; $('goCombo').textContent='×'+G.bestCombo;
+  $('goCoins').textContent=G.earned||0; $('goBest').textContent=S.best+' m';
+  // pase de temporada (se muestra al terminar la partida, como en juegos comerciales)
+  checkSeason();
+  const lvl=passLevel(), inLvl=S.pass.xp-lvl*XP_PER, pct=lvl>=MAXLVL?100:Math.round(inLvl/XP_PER*100);
+  $('goPassLvl').textContent=lvl; $('goPassXp').textContent=G.passXp||0;
+  const pc=passClaimableCount();
+  $('passBadge').textContent=pc; $('passBadge').style.display=pc?'flex':'none';
+  $('reviveBox').style.display=G.reviveUsed?'none':'block';
+  $('btnReviveGems').disabled=S.gems<10;
+  show('gameover'); refreshMenu();
+  // animar la barra de XP tras render
+  const bar=$('goPassBar'); bar.style.width='0%'; setTimeout(()=>{ bar.style.width=pct+'%'; },120);
+}
+
+$('btnPlay').onclick=()=>{ beep(660,.06); startGame(true); };
+$('btnRetry').onclick=()=>{ beep(660,.06); startGame(true); };
+$('btnHome').onclick=()=>{ hide('gameover'); show('menu'); refreshMenu(); };
+$('btnShop').onclick=()=>{ renderShop(); hide('menu'); show('shop'); };
+$('btnGems').onclick=()=>{ hide('menu'); show('gemshop'); };
+$('btnMissions').onclick=()=>{ renderMissions(); hide('menu'); show('missions'); };
+$('btnUpgrades').onclick=()=>{ renderUpgrades(); hide('menu'); show('upgrades'); };
+$('btnLeader').onclick=()=>{ renderLeader(); hide('menu'); show('leaderboard'); };
+$('btnAch').onclick=()=>{ renderAch(); hide('menu'); show('achievements'); };
+$('btnSettings').onclick=()=>{ renderSettings(); hide('menu'); show('settings'); };
+$('btnChest').onclick=()=>{ renderChest(); hide('menu'); show('chest'); };
+$('btnPass').onclick=()=>{ checkSeason(); renderPass(); G._passFrom = $('gameover').classList.contains('hidden')?'menu':'gameover'; hide('menu'); hide('gameover'); show('pass'); };
+document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>{ hide(b.dataset.close); show('menu'); refreshMenu(); });
+// el pase puede abrirse desde game over: al cerrar, vuelve a su origen
+document.querySelector('[data-close="pass"]').onclick=()=>{
+  hide('pass');
+  if(G._passFrom==='gameover'){ show('gameover'); } else { show('menu'); refreshMenu(); }
+};
+
+/* revivir */
+$('btnReviveGems').onclick=()=>{ if(S.gems<10) return; S.gems-=10; G.reviveUsed=true; S.stats.revives++; checkAchievements(); save(); beep(980,.1,'triangle',.2); hide('gameover'); show('hud'); resetRun(true); G.running=true; };
+$('btnReviveAd').onclick=()=>{ hide('gameover'); show('adOverlay'); const f=$('adFill'); f.style.width='0%'; let p=0;
+  const iv=setInterval(()=>{ p+=2; f.style.width=p+'%'; if(p>=100){ clearInterval(iv); hide('adOverlay'); G.reviveUsed=true; S.stats.revives++; checkAchievements(); save(); show('hud'); resetRun(true); G.running=true; } },60); };
+
+/* misiones UI */
+function renderMissions(){
+  const list=$('missionList'); list.innerHTML='';
+  S.missions.forEach(m=>{
+    const val=Math.min(missionValue(m),m.goal), pct=Math.round(val/m.goal*100), done=m.claimed||val>=m.goal;
+    const div=document.createElement('div'); div.className='mrow'+(done?' done':'');
+    div.innerHTML=`<div class="info"><b>${m.desc}</b><div class="pbar"><i style="width:${pct}%"></i></div>
+      <span style="font-size:11px;color:var(--dim)">${val}/${m.goal}</span></div>
+      ${done?'<div class="chk">✓</div>':`<div class="rw">+${m.rw.coins}🪙<br>+${m.rw.gems}💎</div>`}`;
+    list.appendChild(div);
+  });
+}
+/* mejoras UI */
+function renderUpgrades(){
+  $('uCoins').textContent=S.coins; const list=$('upgList'); list.innerHTML='';
+  UPGRADES.forEach(u=>{
+    const lvl=S.up[u.k]||0, maxed=lvl>=u.max, cost=u.cost(lvl);
+    const div=document.createElement('div'); div.className='row';
+    let dots=''; for(let i=0;i<u.max;i++) dots+=`<i class="${i<lvl?'on':''}"></i>`;
+    div.innerHTML=`<div class="ic">${u.ic}</div><div class="info"><b>${u.nm}</b><span>${u.desc}</span><div class="lvldots">${dots}</div></div>
+      <button class="btn buy sm" ${maxed?'disabled':''}>${maxed?'MÁX':'🪙 '+cost}</button>`;
+    div.querySelector('button').onclick=()=>{
+      if(maxed) return;
+      if(S.coins>=cost){ S.coins-=cost; S.up[u.k]=lvl+1; save(); beep(880,.08,'triangle',.2); beep(1100,.1,'triangle',.18); renderUpgrades(); }
+      else { beep(160,.15,'sawtooth',.15); toast('Monedas insuficientes'); }
+    };
+    list.appendChild(div);
+  });
+}
+/* skins UI */
+function renderShop(){
+  $('sCoins').textContent=S.coins; $('sGems').textContent=S.gems;
+  const grid=$('skinGrid'); grid.innerHTML='';
+  SKINS.forEach((sk,i)=>{
+    const owned=S.owned.includes(i), eq=S.skin===i;
+    const div=document.createElement('div'); div.className='skin'+(owned?' owned':'')+(eq?' equipped':'');
+    let price;
+    if(eq) price='EQUIPADO';
+    else if(owned) price='Tocar para equipar';
+    else if(sk.cur==='pass') price='🎟 Pase';
+    else price=(sk.cur==='coins'?'🪙 ':'💎 ')+sk.price;
+    div.innerHTML=`<div class="dot" style="background:${sk.c};color:${sk.c}"></div><div class="nm">${sk.nm}</div><div class="pr">${price}</div>`;
+    div.onclick=()=>{
+      if(owned){ S.skin=i; save(); beep(700,.06); renderShop(); return; }
+      if(sk.cur==='pass'){ beep(160,.12,'sawtooth',.12); toast('🎟 Se consigue en el Pase de temporada'); return; }
+      const wallet=sk.cur==='coins'?S.coins:S.gems;
+      if(wallet>=sk.price){ if(sk.cur==='coins') S.coins-=sk.price; else S.gems-=sk.price; S.owned.push(i); S.skin=i; save(); beep(880,.08,'triangle',.2); beep(1100,.1,'triangle',.18); checkAchievements(); renderShop(); }
+      else beep(160,.15,'sawtooth',.15);
+    };
+    grid.appendChild(div);
+  });
+}
+/* cofre diario UI */
+function renderChest(){
+  const avail=chestAvailable();
+  $('chestStreak').textContent = S.chest.streak>0 ? `🔥 Racha actual: ${S.chest.streak} día(s)` : 'Empieza tu racha hoy';
+  if(avail){
+    $('chestIcon').textContent='🎁'; $('chestMsg').textContent='¡Tu recompensa de hoy te espera!';
+    $('btnOpenChest').style.display=''; $('btnOpenChest').disabled=false; $('btnOpenChest').textContent='ABRIR';
+  } else {
+    $('chestIcon').textContent='✅'; $('chestMsg').textContent='Ya abriste el cofre de hoy. ¡Vuelve mañana!';
+    $('btnOpenChest').style.display='none';
+  }
+}
+$('btnOpenChest').onclick=()=>{
+  const r=openChest(); if(!r) return;
+  $('chestIcon').textContent='🎉';
+  $('chestMsg').innerHTML=`+${r.coins} 🪙 &nbsp; +${r.gems} 💎`;
+  $('chestStreak').textContent=`🔥 Racha: ${r.streak} día(s)`;
+  $('btnOpenChest').style.display='none';
+  beep(740,.1,'triangle',.2); beep(990,.12,'triangle',.18); setTimeout(()=>beep(1240,.14,'triangle',.16),120);
+  refreshMenu();
+};
+/* ranking UI */
+function renderLeader(){
+  const list=$('leaderList'); list.innerHTML='';
+  S.lb.forEach((e,i)=>{
+    const div=document.createElement('div'); div.className='mrow'; if(e.you) div.style.border='2px solid var(--neon)';
+    const medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':'<b style="color:var(--dim);width:22px;display:inline-block">'+(i+1)+'</b>';
+    div.innerHTML=`<div style="width:26px;text-align:center">${medal}</div>
+      <div class="info"><b style="${e.you?'color:var(--neon)':''}">${e.name}</b></div>
+      <div class="rw">${e.score} m</div>`;
+    list.appendChild(div);
+  });
+}
+/* logros UI */
+function renderAch(){
+  $('achCount').textContent=`(${Object.keys(S.ach).length}/${ACHS.length})`;
+  const list=$('achList'); list.innerHTML='';
+  ACHS.forEach(a=>{
+    const got=!!S.ach[a.id];
+    const div=document.createElement('div'); div.className='row'; if(!got) div.style.opacity='.5';
+    div.innerHTML=`<div class="ic">${got?a.ic:'🔒'}</div>
+      <div class="info"><b>${a.nm}</b><span>${a.desc}</span></div>
+      <div class="rw" style="text-align:right">${got?'<span style="color:var(--lime)">✓</span>':((a.rw.coins?'+'+a.rw.coins+'🪙 ':'')+(a.rw.gems?'+'+a.rw.gems+'💎':''))}</div>`;
+    list.appendChild(div);
+  });
+}
+/* ajustes UI */
+function renderSettings(){
+  $('tMusic').textContent=S.music?'ON':'OFF'; $('tMusic').style.opacity=S.music?'1':'.5';
+  $('tSfx').textContent=S.sfx?'ON':'OFF'; $('tSfx').style.opacity=S.sfx?'1':'.5';
+}
+$('tMusic').onclick=()=>{ S.music=!S.music; save(); if(S.music) Music.start(); else Music.stop(); renderSettings(); };
+$('tSfx').onclick=()=>{ S.sfx=!S.sfx; save(); if(S.sfx) beep(880,.08,'triangle',.2); renderSettings(); };
+$('btnReset').onclick=()=>{ if(confirm('¿Borrar TODO el progreso? Esta acción no se puede deshacer.')){ try{localStorage.removeItem('torreInf');}catch(e){} S=JSON.parse(JSON.stringify(DEF)); seedLeaderboard(); checkDaily(); checkSeason(); save(); renderSettings(); refreshMenu(); toast('Progreso borrado'); } };
+
+/* pase de temporada UI */
+function renderPass(){
+  const lvl=passLevel(), inLvl=S.pass.xp - lvl*XP_PER, pct=lvl>=MAXLVL?100:Math.round(inLvl/XP_PER*100);
+  $('passSeason').textContent='Temporada '+S.pass.season;
+  $('passDays').textContent=passDaysLeft()+' días restantes';
+  $('passLvl').textContent='Nv '+lvl;
+  $('passXp').textContent=lvl>=MAXLVL?'¡MÁXIMO!':(inLvl+' / '+XP_PER+' XP');
+  $('passXpBar').style.width=pct+'%';
+  $('btnBuyPass').style.display=S.pass.premium?'none':'';
+  if(S.pass.premium){ /* mostrar etiqueta de poseído */ }
+  const list=$('passList'); list.innerHTML='';
+  for(let L=1; L<=MAXLVL; L++){
+    const reached=lvl>=L;
+    const fr=PASS_FREE[L-1], pr=PASS_PREM[L-1];
+    const fState = S.pass.cf.includes(L)?'claimed':(passClaimable('free',L)?'canclaim':(reached?'':'locked'));
+    const pState = S.pass.cp.includes(L)?'claimed':(passClaimable('prem',L)?'canclaim':(reached?(S.pass.premium?'':'locked'):'locked'));
+    const row=document.createElement('div'); row.className='plevel'+(reached?' reached':'');
+    row.innerHTML=`<div class="lv">${L}<small>NV</small></div>
+      <div class="preward free ${fState}" data-tk="free" data-l="${L}"><span class="cap">${rewardLabel(fr)}</span>${fState==='claimed'?'<span style="color:var(--lime)">✓</span>':fState==='canclaim'?'<span style="color:var(--lime);font-size:11px">RECLAMAR</span>':''}</div>
+      <div class="preward prem ${pState}" data-tk="prem" data-l="${L}"><span class="cap">${rewardLabel(pr)}</span>${pState==='claimed'?'<span style="color:var(--lime)">✓</span>':pState==='canclaim'?'<span style="color:var(--lime);font-size:11px">RECLAMAR</span>':(!S.pass.premium&&reached?'<span style="font-size:11px">🔒</span>':'')}</div>`;
+    list.appendChild(row);
+  }
+  list.querySelectorAll('.preward.canclaim').forEach(elm=>{
+    elm.onclick=()=>{ if(claimPass(elm.dataset.tk, +elm.dataset.l)){ renderPass(); } };
+  });
+}
+$('btnBuyPass').onclick=()=>{
+  if(S.pass.premium) return;
+  if(confirm('[COMPRA SIMULADA]\n\n¿Comprar el Pase Premium de la temporada por S/ 19.90?\n\nDesbloquea el carril premium con skins exclusivas, gemas y más.\n\nEn producción esto abre Google Play / App Store.')){
+    S.pass.premium=true; save(); beep(880,.1,'triangle',.2); beep(1320,.12,'triangle',.18);
+    alert('✅ ¡Pase Premium activado! (simulado)\n\nReclama todas las recompensas premium de los niveles que ya alcanzaste.');
+    renderPass();
+  }
+};
+$('btnClaimAll').onclick=()=>{ if(claimAllPass()===0) toast('No hay recompensas disponibles aún'); renderPass(); };
+/* IAP simulado */
+document.querySelectorAll('[data-gems]').forEach(b=>{ b.onclick=()=>{ const n=+b.dataset.gems;
+  if(confirm(`[COMPRA SIMULADA]\n\n¿Comprar ${n} gemas por ${b.dataset.price}?\n\nEn producción esto abre Google Play / App Store.`)){
+    S.gems+=n; save(); beep(880,.1,'triangle',.2); beep(1320,.12,'triangle',.18); alert('✅ ¡'+n+' gemas añadidas! (simulado)'); }
+}; });
+$('btnNoAds').onclick=()=>{ if(confirm('[COMPRA SIMULADA]\n\n¿Quitar anuncios para siempre por S/ 12.90?')){ S.noAds=true; save(); alert('✅ Anuncios eliminados (simulado)'); } };
+
+/* input */
+function tap(e){ if(!G.running) return; if(e.target&&e.target.closest&&e.target.closest('.screen,button')) return; e.preventDefault(); jump(); }
+cv.addEventListener('pointerdown', tap);
+window.addEventListener('keydown', e=>{ if(e.code==='Space'||e.code==='ArrowUp'){ e.preventDefault(); jump(); } });
+
+/* arrancar música tras el primer gesto del usuario (requisito de los navegadores) */
+function firstGesture(){ ensureAC(); if(S.music) Music.start(); window.removeEventListener('pointerdown',firstGesture); window.removeEventListener('keydown',firstGesture); }
+window.addEventListener('pointerdown', firstGesture);
+window.addEventListener('keydown', firstGesture);
+
+/* init */
+load(); seedLeaderboard(); checkDaily(); checkSeason(); resize(); refreshMenu(); requestAnimationFrame(loop);
+if(!STORAGE_OK){ setTimeout(()=>toast('⚠ Esta vista previa no guarda progreso. Ábrelo en tu navegador.'), 700); }
+</script>
+</body>
+</html>
