@@ -2,9 +2,15 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>TORRE ∞ INFINITA</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Torre Infinita">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0b0d1a">
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@700;900&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
 <style>
   :root{
@@ -207,6 +213,27 @@
   /* Barra inferior */
   .bnav button:hover{color:var(--txt);background:rgba(255,255,255,.09);transform:translateY(-3px);}
   .bnav button:hover span:first-child{transform:scale(1.2) translateY(-2px);}
+
+  /* ===== SAFE AREA (notch / Dynamic Island / barra home) ===== */
+  #hud{padding-top:max(14px,calc(env(safe-area-inset-top) + 8px));padding-left:max(16px,calc(env(safe-area-inset-left) + 4px));padding-right:max(16px,calc(env(safe-area-inset-right) + 4px));}
+  #toasts{bottom:max(18px,calc(env(safe-area-inset-bottom) + 10px));}
+  .menu{padding-top:max(14px,calc(env(safe-area-inset-top) + 6px));padding-bottom:max(16px,calc(env(safe-area-inset-bottom) + 8px));}
+  .screen{padding-top:max(22px,calc(env(safe-area-inset-top) + 14px));padding-bottom:max(22px,calc(env(safe-area-inset-bottom) + 14px));}
+
+  /* ===== OVERLAY DE ORIENTACIÓN ===== */
+  #orientMsg{position:fixed;inset:0;z-index:999;background:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center;padding:30px;}
+  #orientMsg .ori-icon{font-size:64px;animation:oriSpin 1.6s ease-in-out infinite;}
+  @keyframes oriSpin{0%,100%{transform:rotate(0deg)}40%,60%{transform:rotate(-90deg)}}
+  #orientMsg p{font-size:22px;font-weight:800;color:var(--txt);line-height:1.4;}
+  #orientMsg small{font-size:14px;color:var(--dim);}
+
+  /* ===== MODAL PERSONALIZADO (reemplaza confirm/alert) ===== */
+  #modal{position:fixed;inset:0;z-index:998;background:rgba(0,0,0,.78);display:flex;align-items:center;justify-content:center;padding:24px;}
+  #modalBox{background:var(--panel);border:1px solid rgba(255,255,255,.15);border-radius:22px;padding:28px 22px 22px;max-width:340px;width:100%;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.7);}
+  #modalTitle{font-size:13px;letter-spacing:2px;color:var(--cyan);font-weight:800;text-transform:uppercase;margin-bottom:10px;}
+  #modalMsg{font-size:15px;font-weight:700;line-height:1.55;color:var(--txt);white-space:pre-line;}
+  #modalBtns{display:flex;gap:10px;justify-content:center;margin-top:20px;}
+  #modalBtns button{flex:1;max-width:140px;}
 </style>
 </head>
 <body>
@@ -449,6 +476,25 @@
   </div>
 </div>
 
+<!-- Overlay rotación (landscape bloqueado) -->
+<div id="orientMsg" class="hidden">
+  <div class="ori-icon">📱</div>
+  <p>Gira el dispositivo<br>para jugar</p>
+  <small>Torre Infinita es solo vertical</small>
+</div>
+
+<!-- Modal personalizado (reemplaza confirm/alert nativo) -->
+<div id="modal" class="hidden">
+  <div id="modalBox">
+    <div id="modalTitle"></div>
+    <div id="modalMsg"></div>
+    <div id="modalBtns">
+      <button id="modalOk" class="btn">Aceptar</button>
+      <button id="modalCancel" class="btn sec">Cancelar</button>
+    </div>
+  </div>
+</div>
+
 <script>
 'use strict';
 /* ===================== PERSISTENCIA ===================== */
@@ -662,11 +708,30 @@ function passClaimableCount(){
   return n;
 }
 
+/* ===================== MODAL PERSONALIZADO ===================== */
+function showConfirm(title, msg, onOk, onCancel){
+  $('modalTitle').textContent = title;
+  $('modalMsg').textContent   = msg;
+  $('modalCancel').style.display = '';
+  $('modal').classList.remove('hidden');
+  $('modalOk').onclick     = ()=>{ $('modal').classList.add('hidden'); onOk&&onOk(); };
+  $('modalCancel').onclick = ()=>{ $('modal').classList.add('hidden'); onCancel&&onCancel(); };
+}
+function showAlert(title, msg, onClose){
+  $('modalTitle').textContent = title;
+  $('modalMsg').textContent   = msg;
+  $('modalCancel').style.display = 'none';
+  $('modal').classList.remove('hidden');
+  $('modalOk').onclick = ()=>{ $('modal').classList.add('hidden'); onClose&&onClose(); };
+}
+
 /* ===================== CANVAS / AUDIO ===================== */
 const cv=document.getElementById('cv'), cx=cv.getContext('2d');
 let W=0,H=0,DPR=1;
-function resize(){ DPR=Math.min(window.devicePixelRatio||1,2); W=cv.clientWidth; H=cv.clientHeight; cv.width=W*DPR; cv.height=H*DPR; cx.setTransform(DPR,0,0,DPR,0,0); }
+function resize(){ DPR=Math.min(window.devicePixelRatio||1,2); W=cv.clientWidth; H=cv.clientHeight; cv.width=W*DPR; cv.height=H*DPR; cx.setTransform(DPR,0,0,DPR,0,0); checkOrientation(); }
+function checkOrientation(){ document.getElementById('orientMsg').classList.toggle('hidden', window.innerWidth<=window.innerHeight); }
 window.addEventListener('resize', resize);
+window.addEventListener('orientationchange', ()=>setTimeout(resize, 100));
 
 let AC=null;
 function ensureAC(){ if(!AC){ try{ AC=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } if(AC&&AC.state==='suspended') AC.resume(); return AC; }
@@ -718,9 +783,10 @@ const PU={
   frenzy: {ic:'✨',c:'#ffd23f', nm:'Lluvia de oro'},
   ghost:  {ic:'👻',c:'#cdd3ff', nm:'Fantasma'},
   blaster:{ic:'🔫',c:'#ff9d3f', nm:'Blaster'},
+  heart:  {ic:'❤️',c:'#ff3366', nm:'Vida extra'},
 };
 // pesos de aparición: comunes salen más, raros menos
-const PU_POOL=['shield','shield','magnet','magnet','slow','slow','rocket','frenzy','ghost','blaster','blaster','blaster'];
+const PU_POOL=['shield','shield','magnet','magnet','slow','slow','rocket','frenzy','ghost','blaster','blaster','blaster','heart'];
 
 const G={
   running:false, over:false, reviveUsed:false, lives:3,
@@ -819,6 +885,10 @@ function activatePU(t){
     toast('✨ ¡Lluvia de oro! Monedas ×2'); }
   else if(t==='ghost'){ p.ghostT=Math.max(p.ghostT,3.2); p.inv=Math.max(p.inv,3.2); beep(660,.15,'sine',.16); setTimeout(()=>beep(880,.18,'sine',.13),90); toast('👻 Fantasma: atraviesas todo'); }
   else if(t==='blaster'){ p.blasterT=Math.max(p.blasterT,8); p.shootCD=0; beep(440,.08,'sawtooth',.15); setTimeout(()=>beep(660,.1,'sawtooth',.12),60); toast('🔫 ¡Blaster! Disparo automático activo'); }
+  else if(t==='heart'){
+    if(G.lives<4){ G.lives++; beep(880,.1,'triangle',.22); setTimeout(()=>beep(1108,.12,'triangle',.18),80); toast(G.lives===4?'❤️❤️❤️❤️ ¡Vida extra! (máximo)':'❤️ +1 vida'); }
+    else { beep(520,.08,'triangle',.15); toast('❤️ Ya tienes el máximo de vidas'); }
+  }
   G.flash=.6; G.flashC = (PU[t]?hexToRgb(PU[t].c):'120,220,255');
 }
 function hexToRgb(h){ const n=parseInt(h.slice(1),16); return ((n>>16)&255)+','+((n>>8)&255)+','+(n&255); }
@@ -837,7 +907,7 @@ function die(){
   if(G.lives>0){
     p.inv=2.5; G.shake=12; G.flash=.85; G.flashC='255,60,90';
     beep(200,.22,'sawtooth',.2); burst(p.x,p.y,14,'#ff5d8f',5);
-    const h='❤️'.repeat(G.lives)+'🖤'.repeat(3-G.lives);
+    const maxL=Math.max(3,G.lives); const h='❤️'.repeat(G.lives)+'🖤'.repeat(maxL-G.lives);
     toast(G.lives===1?`${h} ¡Última vida!`:h);
     return;
   }
@@ -1295,7 +1365,7 @@ function renderSettings(){
 }
 $('tMusic').onclick=()=>{ S.music=!S.music; save(); if(S.music) Music.start(); else Music.stop(); renderSettings(); };
 $('tSfx').onclick=()=>{ S.sfx=!S.sfx; save(); if(S.sfx) beep(880,.08,'triangle',.2); renderSettings(); };
-$('btnReset').onclick=()=>{ if(confirm('¿Borrar TODO el progreso? Esta acción no se puede deshacer.')){ try{localStorage.removeItem('torreInf');}catch(e){} S=JSON.parse(JSON.stringify(DEF)); seedLeaderboard(); checkDaily(); checkSeason(); save(); renderSettings(); refreshMenu(); toast('Progreso borrado'); } };
+$('btnReset').onclick=()=>{ showConfirm('⚠️ Borrar progreso','¿Borrar TODO el progreso? Esta acción no se puede deshacer.',()=>{ try{localStorage.removeItem('torreInf');}catch(e){} S=JSON.parse(JSON.stringify(DEF)); seedLeaderboard(); checkDaily(); checkSeason(); save(); renderSettings(); refreshMenu(); toast('Progreso borrado'); }); };
 
 /* pase de temporada UI */
 function renderPass(){
@@ -1325,19 +1395,20 @@ function renderPass(){
 }
 $('btnBuyPass').onclick=()=>{
   if(S.pass.premium) return;
-  if(confirm('[COMPRA SIMULADA]\n\n¿Comprar el Pase Premium de la temporada por S/ 19.90?\n\nDesbloquea el carril premium con skins exclusivas, gemas y más.\n\nEn producción esto abre Google Play / App Store.')){
+  showConfirm('🎟 Pase Premium','¿Comprar el Pase Premium por S/ 19.90?\n\nDesbloquea el carril premium con skins exclusivas, gemas y más.\n\n(Simulado — en producción abre Google Play / App Store)',()=>{
     S.pass.premium=true; save(); beep(880,.1,'triangle',.2); beep(1320,.12,'triangle',.18);
-    alert('✅ ¡Pase Premium activado! (simulado)\n\nReclama todas las recompensas premium de los niveles que ya alcanzaste.');
-    renderPass();
-  }
+    showAlert('✅ ¡Pase Premium!','¡Pase Premium activado! (simulado)\nReclama las recompensas premium de los niveles alcanzados.',()=>renderPass());
+  });
 };
 $('btnClaimAll').onclick=()=>{ if(claimAllPass()===0) toast('No hay recompensas disponibles aún'); renderPass(); };
 /* IAP simulado */
 document.querySelectorAll('[data-gems]').forEach(b=>{ b.onclick=()=>{ const n=+b.dataset.gems;
-  if(confirm(`[COMPRA SIMULADA]\n\n¿Comprar ${n} gemas por ${b.dataset.price}?\n\nEn producción esto abre Google Play / App Store.`)){
-    S.gems+=n; save(); beep(880,.1,'triangle',.2); beep(1320,.12,'triangle',.18); alert('✅ ¡'+n+' gemas añadidas! (simulado)'); }
+  showConfirm('💎 Compra de gemas',`¿Comprar ${n} gemas por ${b.dataset.price}?\n\n(Simulado — en producción abre Google Play / App Store)`,()=>{
+    S.gems+=n; save(); beep(880,.1,'triangle',.2); beep(1320,.12,'triangle',.18);
+    showAlert('✅ ¡Gemas añadidas!',`+${n} gemas añadidas a tu cuenta. (simulado)`);
+  });
 }; });
-$('btnNoAds').onclick=()=>{ if(confirm('[COMPRA SIMULADA]\n\n¿Quitar anuncios para siempre por S/ 12.90?')){ S.noAds=true; save(); alert('✅ Anuncios eliminados (simulado)'); } };
+$('btnNoAds').onclick=()=>{ showConfirm('🚫 Sin anuncios','¿Quitar anuncios para siempre por S/ 12.90?\n\n(Simulado)',()=>{ S.noAds=true; save(); showAlert('✅ Hecho','Anuncios eliminados. (simulado)'); }); };
 
 /* input */
 function tap(e){ if(!G.running) return; if(e.target&&e.target.closest&&e.target.closest('.screen,button')) return; e.preventDefault(); jump(); }
