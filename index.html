@@ -408,11 +408,75 @@
 
   /* ===== MODAL PERSONALIZADO (reemplaza confirm/alert) ===== */
   #modal{position:fixed;inset:0;z-index:998;background:rgba(0,0,0,.78);display:flex;align-items:center;justify-content:center;padding:24px;}
-  #modalBox{background:var(--panel);border:1px solid rgba(255,255,255,.15);border-radius:22px;padding:28px 22px 22px;max-width:340px;width:100%;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.7);}
+  #modalBox{position:relative;background:var(--panel);border:1px solid rgba(255,255,255,.15);border-radius:22px;padding:32px 22px 24px;max-width:340px;width:100%;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.7);}
   #modalTitle{font-size:13px;letter-spacing:2px;color:var(--cyan);font-weight:800;text-transform:uppercase;margin-bottom:10px;}
   #modalMsg{font-size:15px;font-weight:700;line-height:1.55;color:var(--txt);white-space:pre-line;}
-  #modalBtns{display:flex;gap:10px;justify-content:center;margin-top:20px;}
-  #modalBtns button{flex:1;max-width:140px;}
+  #modalBtns{display:flex;justify-content:center;margin-top:20px;}
+  #modalClose{position:absolute;top:14px;right:14px;width:32px;height:32px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:50%;cursor:pointer;font-size:14px;font-weight:800;color:var(--dim);display:flex;align-items:center;justify-content:center;transition:all .15s cubic-bezier(.34,1.56,.64,1);}
+  #modalClose:hover{background:rgba(255,255,255,.18);color:#fff;transform:scale(1.12);}
+
+  /* ===== PACK DE EMERGENCIA MODAL ===== */
+  #emergencyModal{position:fixed;inset:0;z-index:999;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;padding:24px;
+    transition:opacity .24s ease;}
+  #emergencyModal.closing{opacity:0;pointer-events:none;}
+  #emergencyBox{position:relative;background:linear-gradient(180deg,#1a0a1f,#0d0f24);border:1px solid rgba(255,93,143,.45);border-radius:28px;padding:32px 22px 24px;max-width:340px;width:100%;text-align:center;box-shadow:0 0 40px rgba(255,93,143,.2),0 24px 60px rgba(0,0,0,.85);
+    animation:starterZoomIn .38s cubic-bezier(.34,1.56,.64,1) both;}
+  #emergencyModal.closing #emergencyBox{animation:starterZoomOut .22s cubic-bezier(.34,1.56,.64,1) both;}
+  .emergX{position:absolute;top:14px;right:14px;width:32px;height:32px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:50%;cursor:pointer;font-size:14px;font-weight:800;color:var(--dim);display:flex;align-items:center;justify-content:center;transition:all .15s cubic-bezier(.34,1.56,.64,1);}
+  .emergX:hover{background:rgba(255,255,255,.18);color:#fff;transform:scale(1.12);}
+  .emergTitle{font-size:12px;letter-spacing:2px;color:var(--neon2);font-weight:800;text-transform:uppercase;margin-bottom:6px;}
+  .emergIco{font-size:46px;line-height:1;margin:8px 0 6px;}
+  .emergSub{font-size:13px;color:var(--dim);margin-bottom:16px;}
+  .emergOffer{background:rgba(255,93,143,.1);border:2px solid rgba(255,93,143,.35);border-radius:16px;padding:16px 18px;margin:0;display:flex;align-items:center;gap:14px;text-align:left;cursor:pointer;transition:all .15s cubic-bezier(.34,1.56,.64,1);}
+  .emergOffer:hover{background:rgba(255,93,143,.2);border-color:rgba(255,93,143,.65);transform:scale(1.02);}
+  .emergOffer:active{transform:scale(.97);}
+  .emergOffer.processing{opacity:.55;pointer-events:none;}
+  .emergOffer .eIc{font-size:34px;flex-shrink:0;}
+  .emergOffer .eInfo{flex:1;}
+  .emergOffer .eInfo b{display:block;font-size:17px;font-weight:800;color:#fff;margin-bottom:2px;}
+  .emergOffer .eInfo span{font-size:13px;color:var(--dim);}
+  .emergPrice{font-size:19px;font-weight:900;color:var(--neon);flex-shrink:0;}
+  #emergLoader{padding:14px 0 2px;}
+  .emergLoaderTrack{height:6px;background:rgba(255,255,255,.1);border-radius:999px;overflow:hidden;margin:8px 0;}
+  .emergLoaderFill{height:100%;width:0%;background:linear-gradient(90deg,var(--neon2),var(--neon));border-radius:999px;transition:width .1s linear;}
+  .emergLoaderMsg{font-size:12px;color:var(--dim);}
+
+  /* ===== STARTER PACK MODAL (popup centrado) ===== */
+  #starterModal{position:fixed;inset:0;z-index:999;background:rgba(11,13,26,.82);display:flex;align-items:center;justify-content:center;padding:24px;
+    transition:opacity .24s ease;}
+  #starterModal.closing{opacity:0;pointer-events:none;}
+  #starterBox{position:relative;background:linear-gradient(160deg,#1b1232 0%,#0d0f24 100%);border:1px solid rgba(176,125,255,.5);border-radius:28px;padding:32px 22px 24px;max-width:340px;width:100%;text-align:center;box-shadow:0 0 44px rgba(176,125,255,.22),0 24px 64px rgba(0,0,0,.88);
+    animation:starterZoomIn .4s cubic-bezier(.34,1.56,.64,1) both;}
+  #starterModal.closing #starterBox{animation:starterZoomOut .22s cubic-bezier(.34,1.56,.64,1) both;}
+  @keyframes starterZoomIn{from{opacity:0;transform:scale(.72)}to{opacity:1;transform:scale(1)}}
+  @keyframes starterZoomOut{from{opacity:1;transform:scale(1)}to{opacity:0;transform:scale(.72)}}
+  .starterX{position:absolute;top:14px;right:14px;width:32px;height:32px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:50%;cursor:pointer;font-size:14px;font-weight:800;color:var(--dim);display:flex;align-items:center;justify-content:center;transition:all .15s cubic-bezier(.34,1.56,.64,1);}
+  .starterX:hover{background:rgba(255,255,255,.18);color:#fff;transform:scale(1.12);}
+  .starterBadge{display:inline-block;background:linear-gradient(135deg,var(--neon2),#c43a73);color:#fff;font-size:11px;font-weight:900;padding:4px 14px;border-radius:999px;letter-spacing:.5px;margin-bottom:10px;box-shadow:0 0 14px rgba(255,93,143,.45);}
+  .starterTitle{font-size:12px;letter-spacing:2px;color:var(--viol);font-weight:800;text-transform:uppercase;margin-bottom:4px;}
+  .starterHeadline{font-size:22px;font-weight:900;color:#fff;margin-bottom:4px;}
+  .starterOrigPrice{font-size:13px;color:var(--dim);text-decoration:line-through;margin-bottom:14px;}
+  .starterItems{display:flex;gap:8px;justify-content:center;margin-bottom:16px;}
+  .starterItem{background:rgba(176,125,255,.1);border:1px solid rgba(176,125,255,.2);border-radius:14px;padding:14px 10px;flex:1;}
+  .starterItem .sIc{font-size:26px;display:block;margin-bottom:4px;}
+  .starterItem .sVal{font-size:15px;font-weight:800;color:#fff;display:block;}
+  .starterItem .sNm{font-size:11px;color:var(--dim);display:block;margin-top:1px;}
+  .starterCta{font-size:19px;font-weight:900;color:var(--neon);margin-bottom:10px;}
+  .starterSkinPick{display:flex;gap:8px;justify-content:center;margin-bottom:14px;}
+  .starterSkinOpt{padding:8px 16px;border-radius:10px;border:2px solid rgba(255,255,255,.1);cursor:pointer;font-weight:800;font-size:13px;background:rgba(255,255,255,.04);color:var(--dim);transition:all .15s cubic-bezier(.34,1.56,.64,1);}
+  .starterSkinOpt.sel{border-color:var(--neon);color:#fff;background:rgba(255,210,63,.1);}
+  #starterBtns{display:flex;justify-content:center;}
+
+  /* ===== HUCHA DE GEMAS ===== */
+  #piggySection{width:100%;max-width:390px;background:linear-gradient(135deg,rgba(255,207,51,.07),rgba(255,154,63,.05));border:1px solid rgba(255,207,51,.2);border-radius:18px;padding:18px;text-align:center;margin-top:14px;flex-shrink:0;}
+  .piggyTitle{font-size:15px;font-weight:800;color:var(--neon);margin-bottom:2px;}
+  .piggySub{font-size:12px;color:var(--dim);margin-bottom:12px;}
+  .piggyAmt{font-size:26px;font-weight:900;color:#fff;margin-bottom:8px;}
+  .piggyTrack{height:10px;background:rgba(255,255,255,.08);border-radius:999px;overflow:hidden;margin-bottom:4px;}
+  .piggyFill{height:100%;background:linear-gradient(90deg,var(--neon),#ff9d3f);border-radius:999px;transition:width .6s ease;}
+  .piggyCap{font-size:11px;color:var(--dim);margin-bottom:12px;}
+  #piggySection.piggyFull{border-color:rgba(255,207,51,.55);animation:cglow 1.6s ease-in-out infinite;}
+  #modalBtns .btn{min-width:180px;}
 
   /* ===== GAME OVER ===== */
   #gameover{
@@ -817,6 +881,15 @@
       <div id="chestStreak" class="sub" style="margin-bottom:14px;"></div>
       <button class="btn" id="btnOpenChest">ABRIR</button>
     </div>
+    <!-- Hucha de Gemas -->
+    <div id="piggySection">
+      <div class="piggyTitle">🐷 Hucha de Gemas</div>
+      <div class="piggySub">+2 💎 por cada 100 m escalados en cada partida</div>
+      <div class="piggyAmt"><span id="piggyVal">0</span> / <span id="piggyMaxVal">150</span> 💎</div>
+      <div class="piggyTrack"><div class="piggyFill" id="piggyFill"></div></div>
+      <div class="piggyCap" id="piggyCap">Sigue escalando para llenarla</div>
+      <button class="btn buy sm" id="btnPiggyBreak" style="margin-top:4px">Romper Hucha &nbsp;·&nbsp; S/ 4.90</button>
+    </div>
     <p class="demoNote">Vuelve cada día: la racha aumenta la recompensa. Es uno de los mejores ganchos de hábito.</p>
   </div>
 
@@ -936,11 +1009,54 @@
 <!-- Modal personalizado (reemplaza confirm/alert nativo) -->
 <div id="modal" class="hidden">
   <div id="modalBox">
+    <button id="modalClose">✕</button>
     <div id="modalTitle"></div>
     <div id="modalMsg"></div>
     <div id="modalBtns">
       <button id="modalOk" class="btn">Aceptar</button>
-      <button id="modalCancel" class="btn sec">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Pack de Emergencia modal -->
+<div id="emergencyModal" class="hidden">
+  <div id="emergencyBox">
+    <button class="emergX" id="btnEmergClose">✕</button>
+    <div class="emergTitle">⚡ ¡Oferta de Emergencia!</div>
+    <div class="emergIco">💎</div>
+    <div class="emergSub">Sin gemas para continuar · toca la oferta para comprar</div>
+    <div class="emergOffer" id="emergOfferCard">
+      <span class="eIc">💎</span>
+      <div class="eInfo"><b>50 Gemas</b><span>Pack de Emergencia</span></div>
+      <span class="emergPrice">S/ 2.90</span>
+    </div>
+    <div id="emergLoader" class="hidden">
+      <div class="emergLoaderTrack"><div class="emergLoaderFill" id="emergFill"></div></div>
+      <div class="emergLoaderMsg">Procesando pago…</div>
+    </div>
+  </div>
+</div>
+
+<!-- Starter Pack modal (popup centrado, auto-show) -->
+<div id="starterModal" class="hidden">
+  <div id="starterBox">
+    <button class="starterX" id="btnStarterClose">✕</button>
+    <div class="starterBadge">-80% OFERTA ÚNICA</div>
+    <div class="starterTitle">Pack de Iniciación</div>
+    <div class="starterHeadline">Arranca con todo</div>
+    <div class="starterOrigPrice">Antes: S/ 19.90</div>
+    <div class="starterItems">
+      <div class="starterItem"><span class="sIc">🪙</span><span class="sVal">1,000</span><span class="sNm">Monedas</span></div>
+      <div class="starterItem"><span class="sIc">💎</span><span class="sVal">50</span><span class="sNm">Gemas</span></div>
+      <div class="starterItem"><span class="sIc" id="starterSkinIc">🔥</span><span class="sVal" id="starterSkinNm">Fénix</span><span class="sNm">Skin</span></div>
+    </div>
+    <div class="starterSkinPick">
+      <button class="starterSkinOpt sel" data-skin="10">🔥 Fénix</button>
+      <button class="starterSkinOpt" data-skin="11">✨ Absoluto</button>
+    </div>
+    <div class="starterCta">Solo S/ 3.90</div>
+    <div id="starterBtns">
+      <button class="btn" id="btnStarterBuy" style="min-width:220px">¡Comprar ahora!</button>
     </div>
   </div>
 </div>
@@ -962,6 +1078,7 @@ const DEF = {
   weekly:{week:0, bought:{}},
   startShieldStack:0, xpBoostRuns:0, startRocket:0,
   league:{rank:0, start:'', table:[], claimed:false},
+  starterBought:false, piggyGems:0, piggyMax:150,
 };
 let S = JSON.parse(JSON.stringify(DEF));
 let STORAGE_OK = (function(){ try{ localStorage.setItem('__t','1'); localStorage.removeItem('__t'); return true; }catch(e){ return false; } })();
@@ -981,6 +1098,8 @@ function load(){
       S.weekly = Object.assign({week:0,bought:{}}, o.weekly||{});
       S.league = Object.assign({rank:0,start:'',table:[],claimed:false}, o.league||{});
       if(!Array.isArray(S.league.table)) S.league.table=[];
+      if(typeof S.piggyGems!=='number') S.piggyGems=0;
+      if(typeof S.piggyMax!=='number')  S.piggyMax=150;
       if(o.music===undefined) S.music=true; if(o.sfx===undefined) S.sfx=true;
     }
   }catch(e){}
@@ -1522,20 +1641,20 @@ function passClaimableCount(){
 }
 
 /* ===================== MODAL PERSONALIZADO ===================== */
+function _closeModal(cb){ $('modal').classList.add('hidden'); cb&&cb(); }
 function showConfirm(title, msg, onOk, onCancel){
   $('modalTitle').textContent = title;
   $('modalMsg').textContent   = msg;
-  $('modalCancel').style.display = '';
   $('modal').classList.remove('hidden');
-  $('modalOk').onclick     = ()=>{ $('modal').classList.add('hidden'); onOk&&onOk(); };
-  $('modalCancel').onclick = ()=>{ $('modal').classList.add('hidden'); onCancel&&onCancel(); };
+  $('modalOk').onclick    = ()=>_closeModal(onOk);
+  $('modalClose').onclick = ()=>_closeModal(onCancel);
 }
 function showAlert(title, msg, onClose){
   $('modalTitle').textContent = title;
   $('modalMsg').textContent   = msg;
-  $('modalCancel').style.display = 'none';
   $('modal').classList.remove('hidden');
-  $('modalOk').onclick = ()=>{ $('modal').classList.add('hidden'); onClose&&onClose(); };
+  $('modalOk').onclick    = ()=>_closeModal(onClose);
+  $('modalClose').onclick = ()=>_closeModal(onClose);
 }
 
 /* ===================== CANVAS / AUDIO ===================== */
@@ -1613,6 +1732,7 @@ const G={
   jumps:0, runTime:0, dronesDodged:0,
   blasterKills:0, blasterUsed:0, magnetUsed:0,
   biome:0, biomePrev:0, biomeT:1, bioParticles:[],
+  _starterShown:false,
 };
 const px = side => side==='L' ? WALL+G.p.r : W-WALL-G.p.r;
 
@@ -2291,9 +2411,6 @@ function refreshMenu(){
   const _arc=$('pcArc');
   if(_arc) _arc.style.strokeDashoffset=pLvl>=MAXLVL?0:138.23*(1-pPct/100);
   const _pc=passClaimableCount();
-  // badge en botón pase de la bnav
-  const _pb=$('passBadge');
-  if(_pb){ _pb.style.display=_pc?'flex':'none'; _pb.textContent=_pc||'!'; }
   // cofre (BL float)
   const cReady=chestAvailable();
   if($('chestBadge')) $('chestBadge').style.display = cReady?'flex':'none';
@@ -2327,6 +2444,11 @@ function refreshMenu(){
     }
   }
   renderLeagueCard();
+  // Starter Pack: auto-popup al entrar al menú si no comprado y no mostrado en esta sesión
+  if(!S.starterBought && !G._starterShown){
+    G._starterShown=true;
+    setTimeout(openStarterModal, 420);
+  }
 }
 function startGame(fresh=true){
   hide('menu'); hide('gameover'); hide('shop'); hide('gemshop'); hide('missions'); hide('upgrades');
@@ -2353,8 +2475,8 @@ function showGameOver(){
   const _xpPrev   = Math.max(0, S.pass.xp - _xpEarned);
   if(_xpEarned>0) setTimeout(()=>toastXP(_xpEarned, _xpPrev), 700);
   const _revCost=10*(G.reviveCount+1);
-  $('reviveGemCost').textContent=_revCost+' gemas';
-  $('btnReviveGems').disabled=S.gems<_revCost;
+  $('reviveGemCost').textContent=S.gems>=_revCost ? _revCost+' gemas' : '+ Comprar gemas';
+  $('btnReviveGems').disabled=false;
   $('btnReviveAd').style.display=G.adReviveUsed?'none':'';
   $('reviveBox').style.display='block';
   // mensaje motivacional contextual
@@ -2372,6 +2494,9 @@ function showGameOver(){
     }
   }
   $('goMotivation').textContent=mot;
+  // Hucha de gemas: +2 por cada 100 m escalados
+  const _piggyGain=Math.floor(G.hMax/100)*2;
+  if(_piggyGain>0){ S.piggyGems=Math.min(S.piggyMax||150,(S.piggyGems||0)+_piggyGain); save(); }
   show('gameover'); refreshMenu();
 }
 
@@ -2413,7 +2538,6 @@ $('lTab2').onclick=()=>{ setLeagueTab('records'); };
 $('btnAch').onclick=()=>{ renderAch(); hide('menu'); hide('settings'); show('achievements'); };
 $('btnSettings').onclick=()=>{ renderSettings(); hide('menu'); show('settings'); };
 $('btnChest').onclick=()=>{ renderChest(); hide('menu'); show('chest'); };
-$('btnPass').onclick=()=>{ checkSeason(); renderPass(); G._passFrom='menu'; hide('menu'); show('pass'); };
 $('btnPassBanner').onclick=()=>{ checkSeason(); renderPass(); G._passFrom='menu'; hide('menu'); show('pass'); };
 $('btnEvent').onclick=()=>{ checkEvent(); renderEvent(); hide('menu'); show('event'); };
 $('btnMissionFloat').onclick=()=>{ renderMissions(); hide('menu'); show('missions'); };
@@ -2434,9 +2558,82 @@ document.querySelector('[data-close="pass"]').onclick=()=>{
   hide('pass');
   if(G._passFrom==='gameover'){ show('gameover'); } else { show('menu'); refreshMenu(); }
 };
+document.querySelector('[data-close="gemshop"]').onclick=()=>{
+  hide('gemshop');
+  if(G._gemshopFrom==='gameover'){ G._gemshopFrom=null; showGameOver(); } else { show('menu'); refreshMenu(); }
+};
+
+/* ===== STARTER PACK ===== */
+let _starterSkin=10;
+function renderStarterModal(){
+  const icons={10:'🔥',11:'✨'};
+  const sk=SKINS[_starterSkin];
+  if($('starterSkinIc')) $('starterSkinIc').textContent=icons[_starterSkin]||'🌟';
+  if($('starterSkinNm')) $('starterSkinNm').textContent=sk?sk.nm:'';
+  document.querySelectorAll('.starterSkinOpt').forEach(b=>b.classList.toggle('sel',+b.dataset.skin===_starterSkin));
+}
+function openStarterModal(){
+  renderStarterModal();
+  const m=$('starterModal');
+  m.classList.remove('closing');
+  show('starterModal');
+}
+function closeStarterModal(){
+  const m=$('starterModal');
+  m.classList.add('closing');
+  setTimeout(()=>{ hide('starterModal'); m.classList.remove('closing'); }, 260);
+}
+document.querySelectorAll('.starterSkinOpt').forEach(b=>{
+  b.onclick=()=>{ _starterSkin=+b.dataset.skin; renderStarterModal(); };
+});
+$('btnStarterClose').onclick=()=>{ G._starterShown=true; closeStarterModal(); };
+$('btnStarterBuy').onclick=()=>{
+  const sk=SKINS[_starterSkin];
+  showConfirm('🎁 Pack de Iniciación',
+    `¿Comprar el Pack de Iniciación por S/ 3.90?\n\n1,000 🪙 · 50 💎 · Skin ${sk?sk.nm:''}\n\n(Simulado — en producción abre Google Play / App Store)`,
+    ()=>{
+      S.coins+=1000; S.gems+=50;
+      if(!S.owned.includes(_starterSkin)) S.owned.push(_starterSkin);
+      S.skin=_starterSkin; S.starterBought=true; save();
+      beep(880,.1,'triangle',.2); setTimeout(()=>beep(1100,.1,'triangle',.18),80); setTimeout(()=>beep(1320,.12,'triangle',.15),160);
+      closeStarterModal(); refreshMenu();
+      showAlert('✅ ¡Pack activado!', `+1,000 🪙 · +50 💎 · Skin ${sk?sk.nm:''} desbloqueada.\n(simulado)`);
+    });
+};
 
 /* revivir */
-$('btnReviveGems').onclick=()=>{ const cost=10*(G.reviveCount+1); if(S.gems<cost) return; S.gems-=cost; G.reviveCount++; S.stats.revives++; checkAchievements(); save(); beep(980,.1,'triangle',.2); hide('gameover'); show('hud'); resetRun(true); G.running=true; };
+function doReviveGems(cost){
+  S.gems-=cost; G.reviveCount++; S.stats.revives++;
+  checkAchievements(); save(); beep(980,.1,'triangle',.2);
+  hide('gameover'); show('hud'); resetRun(true); G.running=true;
+}
+$('btnReviveGems').onclick=()=>{
+  const cost=10*(G.reviveCount+1);
+  if(S.gems<cost){ G._emergReviveCost=cost; show('emergencyModal'); return; }
+  doReviveGems(cost);
+};
+function closeEmergModal(){
+  const m=$('emergencyModal');
+  m.classList.add('closing');
+  setTimeout(()=>{ hide('emergencyModal'); m.classList.remove('closing'); $('emergOfferCard').classList.remove('processing'); hide('emergLoader'); $('emergFill').style.width='0%'; }, 260);
+}
+$('btnEmergClose').onclick=()=>{ closeEmergModal(); };
+$('emergOfferCard').onclick=()=>{
+  $('emergOfferCard').classList.add('processing');
+  show('emergLoader');
+  let prog=0; const fill=$('emergFill');
+  const iv=setInterval(()=>{
+    prog+=100/15; fill.style.width=Math.min(100,prog)+'%';
+    if(prog>=100){
+      clearInterval(iv);
+      S.gems+=50; save();
+      beep(880,.1,'triangle',.2); setTimeout(()=>beep(1100,.1,'triangle',.18),80); setTimeout(()=>beep(1320,.12,'triangle',.15),160);
+      closeEmergModal();
+      const cost=G._emergReviveCost||10;
+      setTimeout(()=>{ if(S.gems>=cost){ doReviveGems(cost); } else { showGameOver(); } }, 270);
+    }
+  },100);
+};
 $('btnReviveAd').onclick=()=>{ hide('gameover'); show('adOverlay'); const f=$('adFill'); f.style.width='0%'; let p=0;
   const iv=setInterval(()=>{ p+=2; f.style.width=p+'%'; if(p>=100){ clearInterval(iv); hide('adOverlay'); G.reviveCount++; G.adReviveUsed=true; S.stats.revives++; checkAchievements(); save(); show('hud'); resetRun(true); G.running=true; } },60); };
 
@@ -2496,6 +2693,20 @@ function renderShop(){
   });
 }
 /* cofre diario UI */
+function renderPiggy(){
+  const cur=S.piggyGems||0, max=S.piggyMax||150;
+  const pct=max>0?Math.round(cur/max*100):0;
+  if($('piggyVal'))    $('piggyVal').textContent=cur;
+  if($('piggyMaxVal')) $('piggyMaxVal').textContent=max;
+  if($('piggyFill'))   $('piggyFill').style.width=pct+'%';
+  const full=cur>=max;
+  if($('piggySection')) $('piggySection').classList.toggle('piggyFull',full);
+  if($('piggyCap'))    $('piggyCap').textContent=full?'¡Hucha llena! ¡Rómpela para cobrar!':'Sigue escalando · +2 💎 cada 100 m';
+  if($('btnPiggyBreak')){
+    $('btnPiggyBreak').disabled=cur===0;
+    $('btnPiggyBreak').textContent=cur>0?`Romper Hucha · S/ 4.90`:'Hucha vacía';
+  }
+}
 function renderChest(){
   const avail=chestAvailable();
   $('chestStreak').textContent = S.chest.streak>0 ? `🔥 Racha actual: ${S.chest.streak} día(s)` : 'Empieza tu racha hoy';
@@ -2506,7 +2717,17 @@ function renderChest(){
     $('chestIcon').textContent='✅'; $('chestMsg').textContent='Ya abriste el cofre de hoy. ¡Vuelve mañana!';
     $('btnOpenChest').style.display='none';
   }
+  renderPiggy();
 }
+$('btnPiggyBreak').onclick=()=>{
+  const cur=S.piggyGems||0; if(cur===0) return;
+  showConfirm('🐷 Romper Hucha',`¿Cobrar ${cur} 💎 de tu hucha?\n\n(Simulado — S/ 4.90)`,()=>{
+    S.gems+=cur; S.piggyGems=0; save();
+    beep(880,.1,'triangle',.2); setTimeout(()=>beep(1100,.1,'triangle',.18),80);
+    toast(`+${cur} 💎 cobradas de la hucha`);
+    renderChest(); refreshMenu();
+  });
+};
 $('btnOpenChest').onclick=()=>{
   const r=openChest(); if(!r) return;
   $('chestIcon').textContent='🎉';
